@@ -1,0 +1,61 @@
+/* stylelint-disable at-rule-no-unknown */
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #000;
+    color: #fff;
+  }
+}
+
+/* Colores personalizados basados en tu logo */
+:root {
+  --color-primary: #00ff41; /* Verde neón de tu logo */
+  --color-primary-dark: #00cc33;
+  --color-primary-light: #4dff88;
+}
+
+/* Scroll suave */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar personalizado con tu verde neón */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-light);
+}
+
+/* Ocultar scrollbar en mobile nav */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Background con tu logo */
+.logo-background {
+  background-image: url('/logo-bg.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 50%;
+  background-attachment: fixed;
+  opacity: 0.30;
+  filter: blur(0px);
+  pointer-events: none;
+}
