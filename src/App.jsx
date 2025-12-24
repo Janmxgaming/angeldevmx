@@ -1,3 +1,12 @@
+import { useEffect } from 'react';
+  // Ejecutar incrementGamePlays solo cuando inicia un juego
+  useEffect(() => {
+    if (currentGame && GameComponent) {
+      incrementGamePlays(currentGame);
+    }
+    // Solo se ejecuta cuando currentGame cambia y hay GameComponent
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentGame, GameComponent]);
 import { useState, Suspense } from 'react';
 import LanguageProvider from './context/LanguageContext';
 import { useLanguage } from './context/LanguageContext';
@@ -65,8 +74,6 @@ function AppContent() {
         );
       }
       if (GameComponent) {
-        // Incrementar contador de plays
-        incrementGamePlays(currentGame);
         return <GameComponent setCurrentGame={setCurrentGame} />;
       }
       return <GamesPage setCurrentGame={setCurrentGame} />;
