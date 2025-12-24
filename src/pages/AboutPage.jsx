@@ -192,7 +192,7 @@ export default function AboutPage() {
             className="text-3xl font-bold mb-8 text-center transition-colors duration-500"
             style={{ color: primaryColor }}
           >
-            <Code className="inline mr-2" size={32} />
+            <Briefcase className="inline mr-2" size={32} />
             {lang === 'es' ? 'Experiencia' : 'Experience'}
           </h2>
           <div className="space-y-6">
