@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useLanguage } from '../../context/LanguageContext';
 import GameLayout from '../ui/GameLayout';
 import { useGameStats } from '../../hooks/useGameHelpers';
 import { getColor } from '../../constants/colors';
 
-export default function SimonGame({ setCurrentGame }) {
-  const { stats, incrementPlays, recordWin, recordLoss } = useGameStats('simon');
+  const { theme } = useLanguage();
+  const { stats, incrementPlays, recordWin } = useGameStats('simon');
   
   // Estados del juego
   const [gameState, setGameState] = useState('idle'); // idle, showing, waiting, correct, wrong, won
@@ -23,8 +24,8 @@ export default function SimonGame({ setCurrentGame }) {
     { id: 0, name: 'red', color: getColor('red'), sound: 329.63 },
     { id: 1, name: 'yellow', color: getColor('yellow'), sound: 261.63 },
     { id: 2, name: 'green', color: getColor('green'), sound: 392.00 },
-    { id: 3, name: 'blue', color: getColor('blue'), sound: 440.00 }
-  ], []);
+    { id: 3, name: theme === 'neon' ? 'green' : 'blue', color: getColor(theme === 'neon' ? 'green' : 'blue'), sound: 440.00 }
+  ], [theme]);
   
   // Inicializar AudioContext
   useEffect(() => {
@@ -158,8 +159,12 @@ export default function SimonGame({ setCurrentGame }) {
   // Manejar victoria
   const handleWin = () => {
     setGameState('won');
-    recordWin(currentLevel, 0);
-  };
+        if (currentLevel > (stats.bestScore || 0)) {
+          recordWin(currentLevel, 0);
+        }
+        if (currentLevel > (stats.bestScore || 0)) {
+          recordWin(currentLevel, 0);
+        }
   
   // Manejar game over
   const handleGameOver = () => {
@@ -190,14 +195,10 @@ export default function SimonGame({ setCurrentGame }) {
         
         {/* Panel de información */}
         <div className="bg-gray-800/50 rounded-lg p-4 mb-6">
-          <div className="grid grid-cols-3 gap-4 text-center text-white">
+          <div className="grid grid-cols-2 gap-4 text-center text-white">
             <div>
               <span className="text-gray-400 text-sm block">Nivel</span>
               <span className="font-bold text-2xl text-cyan-400">{currentLevel}</span>
-            </div>
-            <div>
-              <span className="text-gray-400 text-sm block">Secuencia</span>
-              <span className="font-bold text-2xl text-purple-400">{sequence.length}</span>
             </div>
             <div>
               <span className="text-gray-400 text-sm block">Mejor</span>
@@ -309,24 +310,9 @@ export default function SimonGame({ setCurrentGame }) {
         
         {/* Panel de estadísticas */}
         <div className="bg-gray-800/50 rounded-lg p-4 mt-6">
-          <h3 className="text-white font-bold mb-3">📊 Tus Estadísticas</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div>
-              <p className="text-gray-400 text-sm">Partidas</p>
-              <p className="text-white text-2xl font-bold">{stats.plays}</p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm">Victorias</p>
-              <p className="text-green-400 text-2xl font-bold">{stats.wins}</p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm">Derrotas</p>
-              <p className="text-red-400 text-2xl font-bold">{stats.losses}</p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-sm">Mejor Nivel</p>
-              <p className="text-yellow-400 text-2xl font-bold">{stats.bestScore || 0}</p>
-            </div>
+          <h3 className="text-white font-bold mb-3">🏅 Mejor Nivel Logrado</h3>
+          <div className="text-center">
+            <span className="text-yellow-400 text-4xl font-bold">{stats.bestScore || 0}</span>
           </div>
         </div>
         
