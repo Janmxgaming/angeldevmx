@@ -2,10 +2,12 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import GameLayout from '../ui/GameLayout';
 import { useGameStats } from '../../hooks/useGameHelpers';
+import { useThemeStyles } from '../../hooks/useThemeStyles';
 import { getColor } from '../../constants/colors';
 
 export default function SimonGame({ setCurrentGame }) {
   const { theme } = useLanguage();
+  const { primary, primaryRgba } = useThemeStyles();
   const { stats, incrementPlays, recordWin } = useGameStats('simon');
   
   // Estados del juego
@@ -228,7 +230,11 @@ export default function SimonGame({ setCurrentGame }) {
                 <p className="text-gray-400 mb-6">Memoriza y repite la secuencia</p>
                 <button
                   onClick={startGame}
-                  className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-xl font-bold rounded-lg hover:scale-105 transition-transform shadow-lg shadow-cyan-500/50"
+                  className="px-8 py-4 text-white text-xl font-bold rounded-lg hover:scale-105 transition-transform"
+                  style={{
+                    background: `linear-gradient(135deg, ${primary} 0%, ${primaryRgba(0.7)} 100%)`,
+                    boxShadow: `0 10px 25px ${primaryRgba(0.3)}`
+                  }}
                 >
                   Iniciar Juego
                 </button>
@@ -246,7 +252,11 @@ export default function SimonGame({ setCurrentGame }) {
                 </p>
                 <button
                   onClick={resetGame}
-                  className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg hover:scale-105 transition-transform"
+                  className="px-6 py-3 text-white rounded-lg hover:scale-105 transition-transform"
+                  style={{
+                    background: `linear-gradient(135deg, ${primary} 0%, ${primaryRgba(0.7)} 100%)`,
+                    boxShadow: `0 10px 25px ${primaryRgba(0.3)}`
+                  }}
                 >
                   Jugar de Nuevo
                 </button>

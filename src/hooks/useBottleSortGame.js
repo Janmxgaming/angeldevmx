@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react';
 import { BOTTLE_COLORS } from '../constants/theme';
+import { useLocalStorage } from './useGameHelpers';
 
 /**
  * Custom hook para manejar toda la lógica del juego BottleSort
- * Incluye: generación de niveles, movimientos, validaciones, historial
+ * Incluye: generación de niveles, movimientos, validaciones, historial, nivel máximo
  */
 export function useBottleSortGame() {
   const [level, setLevel] = useState(1);
@@ -13,6 +14,7 @@ export function useBottleSortGame() {
   const [bottles, setBottles] = useState([]);
   const [isWon, setIsWon] = useState(false);
   const [initializedLevel, setInitializedLevel] = useState(0);
+  const [maxLevel, setMaxLevel] = useLocalStorage('bottlesort_max_level', 0);
 
   // Genera datos del nivel
   const generateLevelData = useCallback((lvl) => {
@@ -131,8 +133,12 @@ export function useBottleSortGame() {
 
   // Siguiente nivel
   const nextLevel = useCallback(() => {
-    setLevel(level + 1);
-  }, [level]);
+    const newLevel = level + 1;
+    setLevel(newLevel);
+    if (newLevel > maxLevel) {
+      setMaxLevel(newLevel);
+    }
+  }, [level, maxLevel, setMaxLevel]);
 
   return {
     // Estado
@@ -142,6 +148,7 @@ export function useBottleSortGame() {
     bottles,
     isWon,
     canUndo: history.length > 0,
+    maxLevel,
     
     // Acciones
     handleBottleClick,

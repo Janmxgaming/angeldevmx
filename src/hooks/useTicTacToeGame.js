@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useLocalStorage } from './useGameHelpers';
 
 const WIN_PATTERNS = [
   [0, 1, 2], [3, 4, 5], [6, 7, 8], // Filas
@@ -8,7 +9,7 @@ const WIN_PATTERNS = [
 
 /**
  * Custom hook para manejar toda la lógica del juego TicTacToe
- * Incluye: tablero, turnos, IA, victorias, modos de juego
+ * Incluye: tablero, turnos, IA, victorias, modos de juego, rachas
  */
 export function useTicTacToeGame() {
   const [board, setBoard] = useState(Array(9).fill(null));
@@ -18,6 +19,10 @@ export function useTicTacToeGame() {
   const [gameMode, setGameMode] = useState(null);
   const [difficulty, setDifficulty] = useState(null);
   const [scores, setScores] = useState({ X: 0, O: 0, draws: 0 });
+  
+  // Sistema de rachas (solo para victorias del jugador X)
+  const [currentStreak, setCurrentStreak] = useLocalStorage('tictactoe_current_streak', 0);
+  const [maxStreak, setMaxStreak] = useLocalStorage('tictactoe_max_streak', 0);
 
   // Verificar ganador
   const checkWinner = useCallback((squares) => {
@@ -82,14 +87,28 @@ export function useTicTacToeGame() {
       setWinner(result.winner);
       setWinningLine(result.line);
       setScores(prev => ({ ...prev, [result.winner]: prev[result.winner] + 1 }));
+      
+      // Actualizar rachas solo para victorias de X (jugador principal)
+      if (result.winner === 'X') {
+        const newStreak = currentStreak + 1;
+        setCurrentStreak(newStreak);
+        if (newStreak > maxStreak) {
+          setMaxStreak(newStreak);
+        }
+      } else if (result.winner === 'O') {
+        // Si pierde contra O, resetear racha actual
+        setCurrentStreak(0);
+      }
+      
       return true;
     } else if (newBoard.every(square => square !== null)) {
       setWinner('draw');
       setScores(prev => ({ ...prev, draws: prev.draws + 1 }));
+      // En empate, no resetear racha
       return true;
     }
     return false;
-  }, [checkWinner]);
+  }, [checkWinner, currentStreak, maxStreak, setCurrentStreak, setMaxStreak]);
 
   // Manejar click en celda
   const handleCellClick = useCallback((index) => {
@@ -150,6 +169,8 @@ export function useTicTacToeGame() {
     gameMode,
     difficulty,
     scores,
+    currentStreak,
+    maxStreak,
     
     // Acciones
     handleCellClick,

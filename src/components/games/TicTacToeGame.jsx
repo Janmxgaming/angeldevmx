@@ -22,6 +22,8 @@ export default function TicTacToeGame({ setCurrentGame }) {
     gameMode,
     difficulty,
     scores,
+    currentStreak,
+    maxStreak,
     handleCellClick,
     setGameMode,
     setDifficulty,
@@ -46,6 +48,7 @@ export default function TicTacToeGame({ setCurrentGame }) {
               <ScoreBadge label="X" value={scores.X} />
               <ScoreBadge label="O" value={scores.O} />
               <NeutralBadge label={t.ticTacToeGame.draw} value={scores.draws} />
+              <ScoreBadge label="Racha Máx" value={maxStreak} />
             </BadgeGroup>
           )}
         </GameHeader>

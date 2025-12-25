@@ -19,6 +19,7 @@ export default function BottleSortGame({ setCurrentGame }) {
     bottles,
     isWon,
     canUndo,
+    maxLevel,
     handleBottleClick,
     handleUndo,
     handleRestart,
@@ -36,6 +37,7 @@ export default function BottleSortGame({ setCurrentGame }) {
           <BadgeGroup>
             <ScoreBadge label={t.bottleGame.level} value={level} />
             <ScoreBadge label={t.bottleGame.moves} value={moves} />
+            <ScoreBadge label="Nivel Máx" value={maxLevel} />
           </BadgeGroup>
         </GameHeader>
 

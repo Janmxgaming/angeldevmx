@@ -26,6 +26,9 @@ export default function BottleGuessGame({ setCurrentGame }) {
     isWon,
     showAnswer,
     lastSubmitFeedback,
+    totalWins,
+    currentStreak,
+    maxStreak,
     initGame,
     handleDragStart,
     handleDragOver,
@@ -47,6 +50,8 @@ export default function BottleGuessGame({ setCurrentGame }) {
               label={t.bottleGuessGame.correct} 
               value={`${correctCount}/${bottles.length}`} 
             />
+            <ScoreBadge label="Victorias" value={totalWins} />
+            <ScoreBadge label="Racha Máx" value={maxStreak} />
           </BadgeGroup>
         </GameHeader>
 

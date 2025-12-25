@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { getColorSet } from '../constants/theme';
+import { useLocalStorage } from './useGameHelpers';
 
 const BOTTLES_PER_GAME = 4;
 
 /**
  * Hook personalizado para manejar la lógica del juego de botellas
+ * Ahora incluye sistema de victorias y rachas
  */
 export function useBottleGame() {
   const { language } = useLanguage();
@@ -19,6 +21,11 @@ export function useBottleGame() {
   const [draggedIndex, setDraggedIndex] = useState(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [lastSubmitFeedback, setLastSubmitFeedback] = useState(null);
+  
+  // Sistema de victorias y rachas
+  const [totalWins, setTotalWins] = useLocalStorage('bottleguess_wins', 0);
+  const [currentStreak, setCurrentStreak] = useLocalStorage('bottleguess_current_streak', 0);
+  const [maxStreak, setMaxStreak] = useLocalStorage('bottleguess_max_streak', 0);
 
   // Obtener colores del sistema centralizado
   const colors = getColorSet('basic', 5).map(color => ({
@@ -87,7 +94,25 @@ export function useBottleGame() {
     if (correct === bottles.length) {
       setIsWon(true);
       setShowAnswer(true);
+      
+      // Actualizar estadísticas de victorias y rachas
+      const newWins = totalWins + 1;
+      const newStreak = currentStreak + 1;
+      setTotalWins(newWins);
+      setCurrentStreak(newStreak);
+      
+      if (newStreak > maxStreak) {
+        setMaxStreak(newStreak);
+      }
+    } else if (correct === 0 && newAttempt > 1) {
+      // Si falló completamente, resetear racha actual
+      setCurrentStreak(0);
     }
+  };
+  
+  // Reiniciar juego (mantiene estadísticas pero resetea el juego actual)
+  const resetGame = () => {
+    initGame();
   };
 
   return {
@@ -101,8 +126,14 @@ export function useBottleGame() {
     showAnswer,
     lastSubmitFeedback,
     
+    // Estadísticas
+    totalWins,
+    currentStreak,
+    maxStreak,
+    
     // Acciones
     initGame,
+    resetGame,
     handleDragStart,
     handleDragOver,
     handleDrop,
