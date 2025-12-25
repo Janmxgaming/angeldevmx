@@ -4,6 +4,7 @@ import GameLayout from '../ui/GameLayout';
 import { useGameStats } from '../../hooks/useGameHelpers';
 import { getColor } from '../../constants/colors';
 
+export default function SimonGame({ setCurrentGame }) {
   const { theme } = useLanguage();
   const { stats, incrementPlays, recordWin } = useGameStats('simon');
   
@@ -159,18 +160,15 @@ import { getColor } from '../../constants/colors';
   // Manejar victoria
   const handleWin = () => {
     setGameState('won');
-        if (currentLevel > (stats.bestScore || 0)) {
-          recordWin(currentLevel, 0);
-        }
-        if (currentLevel > (stats.bestScore || 0)) {
-          recordWin(currentLevel, 0);
-        }
+    if (currentLevel > (stats.bestScore || 0)) {
+      recordWin(currentLevel, 0);
+    }
+  };
   
   // Manejar game over
   const handleGameOver = () => {
     setGameState('wrong');
     playSound(200, 500); // Sonido de error
-    recordLoss(currentLevel);
     
     setTimeout(() => {
       setGameState('idle');
