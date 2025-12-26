@@ -284,7 +284,7 @@ export default function SnakeGame({ setCurrentGame }) {
 
       {/* Username & Leaderboard */}
       <div className="mt-8">
-        <UsernameInput />
+        <UsernameInput gameId="snake" />
         <LocalLeaderboard entries={leaderboardEntries} />
       </div>
     </GameContainer>

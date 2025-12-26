@@ -48,5 +48,5 @@ export function useLazyComponent(importFunction) {
 export { useLocalStorage } from './useLocalStorage';
 export { useGameStats, useUserPreferences } from './useGameState';
 export { useUsername } from './useUsername';
-export { useLeaderboard, useLeaderboardSubmission } from './useLeaderboard';
+export { useLeaderboard, useLeaderboardSubmission, useLeaderboardUsernames } from './useLeaderboard';
 

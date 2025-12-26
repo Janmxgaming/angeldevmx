@@ -355,6 +355,28 @@ src/
 
 Este es un proyecto personal, pero si encuentras bugs o tienes sugerencias, son bienvenidas.
 
+---
+
+## 🔧 Utilidades
+
+### Resetear Leaderboard
+```bash
+# Backend
+echo '{"leaderboards":{}}' > backend/leaderboard.json
+
+# Frontend (consola del navegador F12)
+Object.keys(localStorage).filter(k => k.startsWith('leaderboard_')).forEach(k => localStorage.removeItem(k));
+location.reload();
+```
+
+### Resetear Username
+```javascript
+localStorage.removeItem('player_username');
+location.reload();
+```
+
+---
+
 ## 📝 Notas Técnicas
 
 - **Code splitting**: Cada juego se carga solo cuando se necesita
@@ -367,3 +389,4 @@ Este es un proyecto personal, pero si encuentras bugs o tienes sugerencias, son 
 **Autor**: AngelDevMX  
 **Versión**: 2.0.0  
 **Licencia**: MIT
+

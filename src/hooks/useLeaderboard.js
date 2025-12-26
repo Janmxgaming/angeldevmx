@@ -42,15 +42,40 @@ export function useLeaderboard(gameId = 'global') {
 
   const submitScore = useCallback(async (entry) => {
     try {
-      const newEntry = { 
-        ...entry, 
-        date: Date.now(),
-        id: `${entry.username}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      };
+      // Buscar si el usuario ya tiene una entrada
+      const existingEntry = board.find(
+        item => item.username?.toLowerCase() === entry.username?.toLowerCase()
+      );
+
+      // Si existe y la nueva puntuación NO es mayor, no hacer nada
+      if (existingEntry && entry.score <= existingEntry.score) {
+        console.log(`Score ${entry.score} not higher than existing ${existingEntry.score} for ${entry.username}`);
+        return false;
+      }
+
+      let next;
+      if (existingEntry) {
+        // Actualizar la entrada existente con la nueva puntuación más alta
+        next = board.map(item => 
+          item.username?.toLowerCase() === entry.username?.toLowerCase()
+            ? { ...item, score: entry.score, date: Date.now() }
+            : item
+        );
+      } else {
+        // Crear nueva entrada
+        const newEntry = { 
+          ...entry, 
+          date: Date.now(),
+          id: `${entry.username}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        };
+        next = [...board, newEntry];
+      }
       
-      const next = [...board, newEntry]
+      // Ordenar y mantener solo top 50
+      next = next
         .sort((a, b) => (b.score || 0) - (a.score || 0))
         .slice(0, 50);
+      
       setBoard(next);
 
       if (serverAvailable) {
@@ -73,6 +98,15 @@ export function useLeaderboard(gameId = 'global') {
   const clearBoard = useCallback(() => setBoard([]), [setBoard]);
 
   return { board, submitScore, clearBoard, serverAvailable, syncing, syncFromServer };
+}
+
+/**
+ * Hook simple para obtener solo los usernames del leaderboard
+ * Útil para validación de nombres duplicados
+ */
+export function useLeaderboardUsernames(gameId = 'global') {
+  const { board } = useLeaderboard(gameId);
+  return board.map(entry => entry.username).filter(Boolean);
 }
 
 /**

@@ -12,8 +12,9 @@ function containsOffensive(text) {
 
 /**
  * Hook para gestionar nombre de usuario con validación
+ * @param {Array} existingUsernames - Lista opcional de usernames ya usados (del leaderboard)
  */
-export function useUsername() {
+export function useUsername(existingUsernames = []) {
   const [username, setUsernameRaw, removeUsername] = useLocalStorage('player_username', null);
 
   const isLocked = !!username;
@@ -24,6 +25,15 @@ export function useUsername() {
     const trimmed = value.trim().slice(0, 24);
     if (trimmed.length < 2) return { ok: false, reason: 'too_short' };
     if (containsOffensive(trimmed)) return { ok: false, reason: 'offensive' };
+    
+    // Verificar si el nombre ya está en uso (case-insensitive)
+    if (existingUsernames && existingUsernames.length > 0) {
+      const isDuplicate = existingUsernames.some(
+        existing => existing.toLowerCase() === trimmed.toLowerCase()
+      );
+      if (isDuplicate) return { ok: false, reason: 'already_taken' };
+    }
+    
     setUsernameRaw(trimmed);
     return { ok: true };
   };

@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useUsername } from '../../hooks/useGameHelpers';
 import { useLanguage } from '../../context/LanguageContext';
+import { useLeaderboardUsernames } from '../../hooks/useLeaderboard';
 
-export default function UsernameInput({ className = '' }) {
-  const { username, isLocked, setUsername } = useUsername();
+export default function UsernameInput({ className = '', gameId = 'global' }) {
+  const existingUsernames = useLeaderboardUsernames(gameId);
+  const { username, isLocked, setUsername } = useUsername(existingUsernames);
   const { t } = useLanguage();
   const [value, setValue] = useState('');
   const [error, setError] = useState(null);
@@ -16,6 +18,7 @@ export default function UsernameInput({ className = '' }) {
       if (res.reason === 'offensive') setError(t.username.errorOffensive);
       else if (res.reason === 'too_short') setError(t.username.errorTooShort);
       else if (res.reason === 'locked') setError(t.username.errorLocked);
+      else if (res.reason === 'already_taken') setError(t.username.errorAlreadyTaken);
       else setError(t.username.errorInvalid);
       return;
     }

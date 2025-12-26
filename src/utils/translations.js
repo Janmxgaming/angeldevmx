@@ -81,6 +81,7 @@ export const translations = {
       errorOffensive: 'Nombre no permitido',
       errorTooShort: 'Ingrese al menos 2 caracteres',
       errorLocked: 'El nombre ya está fijado',
+      errorAlreadyTaken: 'Ese nombre ya está en uso. Elige otro.',
       errorInvalid: 'Nombre inválido'
     },
     leaderboard: {
@@ -199,6 +200,7 @@ export const translations = {
       errorOffensive: 'Name not allowed',
       errorTooShort: 'Enter at least 2 characters',
       errorLocked: 'Name is already locked',
+      errorAlreadyTaken: 'That name is already taken. Choose another.',
       errorInvalid: 'Invalid name'
     },
     leaderboard: {

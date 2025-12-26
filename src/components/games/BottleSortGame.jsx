@@ -49,7 +49,7 @@ export default function BottleSortGame({ setCurrentGame }) {
           onBack={() => setCurrentGame(null)}
           backLabel={t.bottleGame.backToGames}
         >
-          <UsernameInput />
+          <UsernameInput gameId="bottlesort" />
           <BadgeGroup>
             <ScoreBadge label={t.bottleGame.level} value={level} />
             <ScoreBadge label={t.bottleGame.moves} value={moves} />

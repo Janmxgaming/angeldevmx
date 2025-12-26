@@ -59,7 +59,7 @@ export default function BottleGuessGame({ setCurrentGame }) {
           onBack={() => setCurrentGame(null)}
           backLabel={t.bottleGuessGame.backToGames}
         >
-          <UsernameInput />
+          <UsernameInput gameId="bottleguess" />
           <BadgeGroup>
             <ScoreBadge label={t.bottleGuessGame.attempts} value={attempts} />
             <ScoreBadge 

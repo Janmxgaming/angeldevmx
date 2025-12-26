@@ -63,7 +63,7 @@ export default function TicTacToeGame({ setCurrentGame }) {
           onBack={() => setCurrentGame(null)}
           backLabel={t.ticTacToeGame.backToGames}
         >
-          <UsernameInput />
+          <UsernameInput gameId="tictactoe" />
           {gameMode && (
             <BadgeGroup>
               <ScoreBadge label="X" value={scores.X} />

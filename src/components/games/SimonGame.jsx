@@ -218,7 +218,7 @@ export default function SimonGame({ setCurrentGame }) {
               <ArrowLeft size={20} />
               <span>Volver a Juegos</span>
             </button>
-            <UsernameInput />
+            <UsernameInput gameId="simon" />
           </div>
         </div>
 
