@@ -1,4 +1,5 @@
 import { Send, RefreshCw } from 'lucide-react';
+import { useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useThemeStyles } from '../../hooks/useThemeStyles';
 import { useBottleGame } from '../../hooks/useBottleGame';
@@ -6,7 +7,7 @@ import { GradientButton, DangerButton } from '../ui/GameButtons';
 import { ScoreBadge, BadgeGroup } from '../ui/GameBadges';
 import { GameTitle, GameSubtitle, GameHeader } from '../ui/GameLayout';
 import UsernameInput from '../ui/UsernameInput';
-import { useLeaderboard, useUsername, useLeaderboardSubmission } from '../../hooks/useGameHelpers';
+import { useLeaderboard, useUsername, useLeaderboardSubmission, useGameStats } from '../../hooks/useGameHelpers';
 import LocalLeaderboard from '../ui/LocalLeaderboard';
 import { GameContainer, GameControls } from './shared/GameContainer';
 import InfoPanel from './shared/InfoPanel';
@@ -38,8 +39,14 @@ export default function BottleGuessGame({ setCurrentGame }) {
     handleSubmit
   } = useBottleGame();
 
+  const { incrementPlays } = useGameStats('bottleguess');
   const { username } = useUsername();
   const { board } = useLeaderboard('bottleguess');
+  
+  // Incrementar contador solo al iniciar el juego (primera vez que se monta el componente)
+  useEffect(() => {
+    incrementPlays();
+  }, [incrementPlays]);
   
   // Auto-submit cuando gana (usar victorias como score)
   useLeaderboardSubmission('bottleguess', username, isWon, totalWins);
@@ -59,8 +66,8 @@ export default function BottleGuessGame({ setCurrentGame }) {
               label={t.bottleGuessGame.correct} 
               value={`${correctCount}/${bottles.length}`} 
             />
-            <ScoreBadge label="Victorias" value={totalWins} />
-            <ScoreBadge label="Racha Máx" value={maxStreak} />
+            <ScoreBadge label={t.common.wins} value={totalWins} />
+            <ScoreBadge label={t.common.maxStreak} value={maxStreak} />
           </BadgeGroup>
         </GameHeader>
 

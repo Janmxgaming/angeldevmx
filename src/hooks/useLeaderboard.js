@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
 /**
@@ -77,16 +77,29 @@ export function useLeaderboard(gameId = 'global') {
 
 /**
  * Hook para envío automático al leaderboard cuando termina un juego
+ * IMPORTANTE: Solo envía una vez cuando condition cambia de false a true
  */
 export function useLeaderboardSubmission(gameId, username, condition, score) {
   const { submitScore } = useLeaderboard(gameId);
+  const hasSubmitted = useRef(false);
+  const prevCondition = useRef(false);
   
   useEffect(() => {
-    if (condition && score !== null && score !== undefined) {
+    // Solo enviar cuando condition cambia de false a true (primera victoria)
+    if (condition && !prevCondition.current && !hasSubmitted.current && score !== null && score !== undefined) {
       submitScore({ 
         username: username || 'Anon', 
         score 
       });
+      hasSubmitted.current = true;
     }
+    prevCondition.current = condition;
   }, [condition, score, username, submitScore]);
+  
+  // Reset cuando se reinicia el juego (condition vuelve a false)
+  useEffect(() => {
+    if (!condition) {
+      hasSubmitted.current = false;
+    }
+  }, [condition]);
 }

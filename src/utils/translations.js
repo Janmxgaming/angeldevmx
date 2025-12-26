@@ -19,12 +19,13 @@ export const translations = {
       comingSoon: 'Próximamente',
       play: 'Jugar',
       bottleSort: 'Ordena las Botellas',
-      bottleGuess: 'Adivina el Orden', // 👈 NUEVO
-      snake: 'Snake',
+      bottleGuess: 'Adivina el Orden',
+      snake: 'Snake Retro',
       tictactoe: 'Gato',
       wordSearch: 'Sopa de Letras',
       memory: 'Memorama',
-      simon: 'Simon Dice'
+      simon: 'Simon Dice',
+      backToGames: 'Volver a Juegos'
     },
     bottleGame: {
       title: 'Ordena las Botellas de Color',
@@ -71,6 +72,49 @@ export const translations = {
       backToGames: 'Volver a Juegos',
       backToMenu: 'Volver al Menú',
       scores: 'Puntuación'
+    },
+    username: {
+      player: 'Jugador',
+      locked: '(fijado — borra datos del navegador para cambiar)',
+      enterName: 'Ingresa tu nombre',
+      save: 'Guardar',
+      errorOffensive: 'Nombre no permitido',
+      errorTooShort: 'Ingrese al menos 2 caracteres',
+      errorLocked: 'El nombre ya está fijado',
+      errorInvalid: 'Nombre inválido'
+    },
+    leaderboard: {
+      title: 'Tabla de Posiciones',
+      empty: 'Nadie aún. ¡Sé el primero!',
+      public: 'Público',
+      syncTooltip: 'Sincronizar con servidor',
+      now: 'Ahora',
+      minutesAgo: 'Hace {0}m',
+      hoursAgo: 'Hace {0}h',
+      daysAgo: 'Hace {0}d'
+    },
+    common: {
+      wins: 'Victorias',
+      maxStreak: 'Racha Máx',
+      score: 'Puntuación',
+      level: 'Nivel',
+      plays: 'Partidas'
+    },
+    snake: {
+      title: 'Snake Retro - Nokia',
+      score: 'Puntuación',
+      bestScore: 'Mejor Puntuación',
+      startGame: 'Iniciar Juego',
+      pause: 'Pausar',
+      resume: 'Reanudar',
+      restart: 'Reiniciar',
+      paused: 'Pausado',
+      gameOver: '¡Game Over!',
+      finalScore: 'Puntuación Final',
+      playAgain: 'Jugar de Nuevo',
+      controls: 'Usa las flechas o WASD para moverte',
+      instructions: 'Come la comida (●) y evita chocar con las paredes o contigo mismo',
+      keyboardHint: 'Presiona ESPACIO para pausar'
     }
   },
   en: {
@@ -78,11 +122,12 @@ export const translations = {
       home: 'Home',
       games: 'Games',
       about: 'About',
-      projects: 'Projects',
-      contact: 'Contact'
-    },
-    home: {
-      welcome: 'Welcome',
+      snake: 'Retro Snake',
+      tictactoe: 'Tic-Tac-Toe',
+      wordSearch: 'Word Search',
+      memory: 'Memory Game',
+      simon: 'Simon Says',
+      backToGames: 'Back to Game',
       title: 'AngelDevMX',
       subtitle: 'Full Stack Developer & Game Creator',
       description: 'Creating unique digital experiences',
@@ -145,6 +190,49 @@ export const translations = {
       backToGames: 'Back to Games',
       backToMenu: 'Back to Menu',
       scores: 'Scores'
+    },
+    username: {
+      player: 'Player',
+      locked: '(locked — clear browser data to change)',
+      enterName: 'Enter your name',
+      save: 'Save',
+      errorOffensive: 'Name not allowed',
+      errorTooShort: 'Enter at least 2 characters',
+      errorLocked: 'Name is already locked',
+      errorInvalid: 'Invalid name'
+    },
+    leaderboard: {
+      title: 'Leaderboard',
+      empty: 'No one yet. Be the first!',
+      public: 'Public',
+      syncTooltip: 'Sync with server',
+      now: 'Now',
+      minutesAgo: '{0}m ago',
+      hoursAgo: '{0}h ago',
+      daysAgo: '{0}d ago'
+    },
+    common: {
+      wins: 'Wins',
+      maxStreak: 'Max Streak',
+      score: 'Score',
+      level: 'Level',
+      plays: 'Plays'
+    },
+    snake: {
+      title: 'Retro Snake - Nokia',
+      score: 'Score',
+      bestScore: 'Best Score',
+      startGame: 'Start Game',
+      pause: 'Pause',
+      resume: 'Resume',
+      restart: 'Restart',
+      paused: 'Paused',
+      gameOver: 'Game Over!',
+      finalScore: 'Final Score',
+      playAgain: 'Play Again',
+      controls: 'Use arrow keys or WASD to move',
+      instructions: 'Eat the food (●) and avoid hitting walls or yourself',
+      keyboardHint: 'Press SPACE to pause'
     }
   }
 };

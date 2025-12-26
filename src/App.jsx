@@ -1,4 +1,4 @@
-import { useState, Suspense } from 'react';
+import { useState } from 'react';
 import LanguageProvider from './context/LanguageContext';
 import { useLanguage } from './context/LanguageContext';
 import Navbar from './components/layout/Navbar';

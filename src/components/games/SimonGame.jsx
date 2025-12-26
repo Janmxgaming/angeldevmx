@@ -8,7 +8,7 @@ import LocalLeaderboard from '../ui/LocalLeaderboard';
 import { getColor } from '../../constants/colors';
 
 export default function SimonGame({ setCurrentGame }) {
-  useLanguage();
+  const { t } = useLanguage();
   const { primary, primaryRgba } = useThemeStyles();
   const { stats, incrementPlays, recordWin, updateBestScore } = useGameStats('simon');
   const { username } = useUsername();
@@ -280,7 +280,7 @@ export default function SimonGame({ setCurrentGame }) {
                 <h2 className="text-white text-3xl mb-2">¡Increíble!</h2>
                 <p className="text-gray-400 mb-2">Llegaste al nivel {currentLevel}</p>
                 <p className="text-cyan-400 text-2xl font-bold mb-6">
-                  Puntuación: {currentLevel * 100}
+                  {t.common.score}: {currentLevel * 100}
                 </p>
                 <button
                   onClick={resetGame}

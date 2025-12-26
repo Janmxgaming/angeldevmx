@@ -1,4 +1,5 @@
 import { ArrowLeft, RotateCcw } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTicTacToeGame } from '../../hooks/useTicTacToeGame';
 import { GAME_MODES, DIFFICULTY_LEVELS, formatOptionsForSelector } from '../../constants/gameOptions';
@@ -6,7 +7,7 @@ import { GradientButton, DangerButton } from '../ui/GameButtons';
 import { ScoreBadge, NeutralBadge, BadgeGroup } from '../ui/GameBadges';
 import { GameTitle, GameHeader } from '../ui/GameLayout';
 import UsernameInput from '../ui/UsernameInput';
-import { useLeaderboard, useLeaderboardSubmission, useUsername } from '../../hooks/useGameHelpers';
+import { useLeaderboard, useLeaderboardSubmission, useUsername, useGameStats } from '../../hooks/useGameHelpers';
 import LocalLeaderboard from '../ui/LocalLeaderboard';
 import { GameContainer, GameControls } from './shared/GameContainer';
 import OptionSelector from './shared/OptionSelector';
@@ -15,6 +16,7 @@ import GameStatus from './tictactoe/GameStatus';
 
 export default function TicTacToeGame({ setCurrentGame }) {
   const { t } = useLanguage();
+  const hasIncrementedPlays = useRef(false);
   
   // Toda la lógica del juego en un custom hook
   const {
@@ -33,8 +35,17 @@ export default function TicTacToeGame({ setCurrentGame }) {
     resetAll
   } = useTicTacToeGame();
 
+  const { incrementPlays } = useGameStats('tictactoe');
   const { username } = useUsername();
   const { board: leaderboardEntries } = useLeaderboard('tictactoe');
+  
+  // Incrementar contador solo cuando el usuario selecciona un modo de juego (empieza a jugar realmente)
+  useEffect(() => {
+    if (gameMode && !hasIncrementedPlays.current) {
+      incrementPlays();
+      hasIncrementedPlays.current = true;
+    }
+  }, [gameMode, incrementPlays]);
   
   // Enviar score cuando hay victoria (usar wins del jugador como score)
   const playerWins = winner === 'X' ? scores.X : winner === 'O' ? scores.O : 0;
@@ -58,7 +69,7 @@ export default function TicTacToeGame({ setCurrentGame }) {
               <ScoreBadge label="X" value={scores.X} />
               <ScoreBadge label="O" value={scores.O} />
               <NeutralBadge label={t.ticTacToeGame.draw} value={scores.draws} />
-              <ScoreBadge label="Racha Máx" value={maxStreak} />
+              <ScoreBadge label={t.common.maxStreak} value={maxStreak} />
             </BadgeGroup>
           )}
         </GameHeader>

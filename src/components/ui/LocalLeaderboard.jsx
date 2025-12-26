@@ -1,5 +1,6 @@
 import React from 'react';
 import { Trophy, Medal, Award, Globe, RefreshCw } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 const getRankIcon = (rank) => {
   switch (rank) {
@@ -10,7 +11,7 @@ const getRankIcon = (rank) => {
   }
 };
 
-const formatDate = (timestamp) => {
+const formatDate = (timestamp, t, lang) => {
   if (!timestamp) return '';
   const date = new Date(timestamp);
   const now = new Date();
@@ -19,16 +20,16 @@ const formatDate = (timestamp) => {
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
   
-  if (diffMins < 1) return 'Ahora';
-  if (diffMins < 60) return `Hace ${diffMins}m`;
-  if (diffHours < 24) return `Hace ${diffHours}h`;
-  if (diffDays < 7) return `Hace ${diffDays}d`;
-  return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+  if (diffMins < 1) return t.leaderboard.now;
+  if (diffMins < 60) return t.leaderboard.minutesAgo.replace('{0}', diffMins);
+  if (diffHours < 24) return t.leaderboard.hoursAgo.replace('{0}', diffHours);
+  if (diffDays < 7) return t.leaderboard.daysAgo.replace('{0}', diffDays);
+  return date.toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', { day: '2-digit', month: 'short' });
 };
 
 export default function LocalLeaderboard({ 
   entries = [], 
-  title = 'Leaderboard', 
+  title, 
   limit = 10,
   showRank = true,
   showDate = true,
@@ -36,6 +37,8 @@ export default function LocalLeaderboard({
   syncing = false,
   onSync = null
 }) {
+  const { t, lang } = useLanguage();
+  const displayTitle = title || t.leaderboard.title;
   const list = entries.slice(0, limit);
   
   if (list.length === 0) {
@@ -44,18 +47,18 @@ export default function LocalLeaderboard({
         <div className="flex items-center justify-between mb-2">
           <h4 className="font-bold text-white flex items-center gap-2">
             <Trophy size={18} className="text-yellow-400" />
-            {title}
+            {displayTitle}
           </h4>
           {serverAvailable && (
             <div className="flex items-center gap-1 text-xs text-green-400">
               <Globe size={12} />
-              <span>Público</span>
+              <span>{t.leaderboard.public}</span>
             </div>
           )}
         </div>
         <div className="text-gray-400 text-sm py-4">
           <Trophy size={24} className="mx-auto mb-2 opacity-50" />
-          <p>Nadie aún. ¡Sé el primero!</p>
+          <p>{t.leaderboard.empty}</p>
         </div>
       </div>
     );
@@ -66,13 +69,13 @@ export default function LocalLeaderboard({
       <div className="flex items-center justify-between mb-3">
         <h4 className="font-bold text-white flex items-center gap-2">
           <Trophy size={18} className="text-yellow-400" />
-          {title}
+          {displayTitle}
         </h4>
         <div className="flex items-center gap-2">
           {serverAvailable && (
             <div className="flex items-center gap-1 text-xs text-green-400">
               <Globe size={12} />
-              <span>Público</span>
+              <span>{t.leaderboard.public}</span>
             </div>
           )}
           {onSync && (
@@ -80,7 +83,7 @@ export default function LocalLeaderboard({
               onClick={onSync}
               disabled={syncing}
               className="p-1 hover:bg-gray-700/50 rounded transition-colors disabled:opacity-50"
-              title="Sincronizar con servidor"
+              title={t.leaderboard.syncTooltip}
             >
               <RefreshCw size={14} className={`text-gray-400 ${syncing ? 'animate-spin' : ''}`} />
             </button>
@@ -114,7 +117,7 @@ export default function LocalLeaderboard({
                     {entry.username || 'Anon'}
                   </span>
                   {showDate && entry.date && (
-                    <p className="text-xs text-gray-500">{formatDate(entry.date)}</p>
+                    <p className="text-xs text-gray-500">{formatDate(entry.date, t, lang)}</p>
                   )}
                 </div>
               </div>

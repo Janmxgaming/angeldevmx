@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useUsername } from '../../hooks/useGameHelpers';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function UsernameInput({ className = '' }) {
   const { username, isLocked, setUsername } = useUsername();
+  const { t } = useLanguage();
   const [value, setValue] = useState('');
   const [error, setError] = useState(null);
 
@@ -11,10 +13,10 @@ export default function UsernameInput({ className = '' }) {
     setError(null);
     const res = setUsername(value);
     if (!res.ok) {
-      if (res.reason === 'offensive') setError('Nombre no permitido');
-      else if (res.reason === 'too_short') setError('Ingrese al menos 2 caracteres');
-      else if (res.reason === 'locked') setError('El nombre ya está fijado');
-      else setError('Nombre inválido');
+      if (res.reason === 'offensive') setError(t.username.errorOffensive);
+      else if (res.reason === 'too_short') setError(t.username.errorTooShort);
+      else if (res.reason === 'locked') setError(t.username.errorLocked);
+      else setError(t.username.errorInvalid);
       return;
     }
     // success: input will become locked by hook state update
@@ -23,9 +25,9 @@ export default function UsernameInput({ className = '' }) {
   if (isLocked) {
     return (
       <div className={`flex items-center gap-2 ${className}`}>
-        <span className="text-sm text-gray-300">Jugador:</span>
+        <span className="text-sm text-gray-300">{t.username.player}:</span>
         <span className="font-semibold text-white">{username}</span>
-        <small className="ml-2 text-xs text-gray-400">(fijado — borra datos del navegador para cambiar)</small>
+        <small className="ml-2 text-xs text-gray-400">{t.username.locked}</small>
       </div>
     );
   }
@@ -36,14 +38,14 @@ export default function UsernameInput({ className = '' }) {
         aria-label="username"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Ingresa tu nombre"
+        placeholder={t.username.enterName}
         className="px-3 py-2 rounded-md bg-gray-800 text-white placeholder-gray-400"
       />
       <button
         type="submit"
         className="px-3 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-md"
       >
-        Guardar
+        {t.username.save}
       </button>
       {error && <div className="text-xs text-red-400 ml-2">{error}</div>}
     </form>

@@ -83,12 +83,20 @@ export const GAME_REGISTRY = {
   // Juegos futuros (deshabilitados)
   snake: createGame({
     id: 'snake',
-    component: null,
+    enabled: true,
+    name: { es: 'Snake Retro', en: 'Retro Snake' },
+    description: { 
+      es: 'El clásico Snake estilo Nokia. Come, crece y evita chocar.',
+      en: 'Classic Nokia-style Snake. Eat, grow, and avoid crashing.'
+    },
+    emoji: '🐍',
+    component: () => import('../components/games/SnakeGame.jsx'),
     category: 'arcade',
     difficulty: 'medium',
-    meta: { icon: '🐍', color: 'green', version: '0.0.0', releaseDate: 'TBD' },
-    features: { levels: true },
-    stats: { avgPlayTime: 10, popularity: 0 }
+    tags: ['retro', 'arcade', 'nokia', 'clasico'],
+    meta: { icon: '🐍', color: 'green', releaseDate: '2025-12-25' },
+    features: { levels: false, achievements: true },
+    stats: { avgPlayTime: 5, popularity: 5.0, plays: 0 }
   }),
 
   memory: createGame({

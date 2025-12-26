@@ -1,4 +1,4 @@
-import { BLUES, GREENS, REDS, YELLOWS_ORANGES, getColor as _getColor, getColorSet, COLOR_SETS } from './colors';
+import { BLUES, GREENS, REDS, YELLOWS_ORANGES, getColor, getColorSet, COLOR_SETS } from './colors';
 
 // ============================================
 // TIPOS DE TEMA
@@ -44,10 +44,7 @@ export const COLORS = {
 
 // Exportar colores para juegos (compatibilidad)
 export { ALL_COLORS as GAME_COLORS } from './colors';
-export { getColor as getGameColor, getColorSet } from './colors';
-
-// Re-exportar COLOR_SETS para compatibilidad
-export { COLOR_SETS };
+export { getColor as getGameColor, getColorSet, COLOR_SETS };
 
 // ============================================
 // COLORES ESPECÍFICOS DE APLICACIÓN

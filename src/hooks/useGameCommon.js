@@ -1,13 +1,21 @@
 /**
  * Helper para reducir boilerplate en componentes de juegos
+ * 
+ * IMPORTANTE: Este hook NO incrementa automáticamente el contador de plays.
+ * Cada juego debe llamar `incrementPlays()` manualmente cuando el usuario
+ * realmente inicie una partida (ej: al presionar "Iniciar", "Jugar", etc.)
  */
 
-import { useEffect } from 'react';
 import { useLanguage } from '@context/LanguageContext';
 import { useGameStats, useLeaderboard, useUsername, useLeaderboardSubmission } from '@hooks';
 
 /**
  * Hook que agrupa toda la lógica común de juegos
+ * 
+ * @param {string} gameId - ID del juego
+ * @param {boolean} hasWon - Si el jugador ha ganado (para auto-submit al leaderboard)
+ * @param {number} score - Puntuación actual (para auto-submit al leaderboard)
+ * @returns {Object} Valores comunes para juegos (t, lang, username, leaderboardEntries, incrementPlays)
  */
 export function useGameCommon(gameId, hasWon, score) {
   const { t, lang } = useLanguage();
@@ -15,10 +23,6 @@ export function useGameCommon(gameId, hasWon, score) {
   const { username } = useUsername();
   const { board: leaderboardEntries } = useLeaderboard(gameId);
   
-  useEffect(() => {
-    incrementPlays();
-  }, [incrementPlays]);
-
   // Auto-submit al leaderboard cuando se gana
   useLeaderboardSubmission(gameId, username, hasWon, score);
 
@@ -26,7 +30,8 @@ export function useGameCommon(gameId, hasWon, score) {
     t,
     lang,
     username,
-    leaderboardEntries
+    leaderboardEntries,
+    incrementPlays // Devolver la función para que el juego la llame cuando inicie
   };
 }
 

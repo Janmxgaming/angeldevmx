@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 import { translations } from '../utils/translations';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const LanguageContext = createContext();
 
@@ -13,8 +14,8 @@ export function useLanguage() {
 }
 
 export default function LanguageProvider({ children }) {
-  const [lang, setLang] = useState('es');
-  const [theme, setTheme] = useState('neon'); // 'neon' o 'professional'
+  const [lang, setLang] = useLocalStorage('user_language', 'es');
+  const [theme, setTheme] = useLocalStorage('user_theme', 'neon'); // Persiste en localStorage
 
   // Aplicar data-theme al body para que el scrollbar cambie de color
   useEffect(() => {

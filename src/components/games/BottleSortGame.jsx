@@ -1,7 +1,8 @@
 import { RotateCcw, Undo2 } from 'lucide-react';
+import { useEffect } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useBottleSortGame } from '../../hooks/useBottleSortGame';
-import { useUsername, useLeaderboard, useLeaderboardSubmission } from '../../hooks/useGameHelpers';
+import { useUsername, useLeaderboard, useLeaderboardSubmission, useGameStats } from '../../hooks/useGameHelpers';
 import { OutlineButton, DangerButton } from '../ui/GameButtons';
 import { ScoreBadge, BadgeGroup } from '../ui/GameBadges';
 import { GameTitle, GameHeader } from '../ui/GameLayout';
@@ -28,8 +29,14 @@ export default function BottleSortGame({ setCurrentGame }) {
     nextLevel
   } = useBottleSortGame();
 
+  const { incrementPlays } = useGameStats('bottlesort');
   const { username } = useUsername();
   const { board } = useLeaderboard('bottlesort');
+  
+  // Incrementar contador solo al iniciar el juego (primera vez que se monta el componente)
+  useEffect(() => {
+    incrementPlays();
+  }, [incrementPlays]);
   
   // Auto-submit cuando gana
   useLeaderboardSubmission('bottlesort', username, isWon, level);
