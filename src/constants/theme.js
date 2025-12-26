@@ -1,4 +1,4 @@
-import { BLUES, GREENS, REDS, YELLOWS_ORANGES, getColor, getColorSet, COLOR_SETS } from './colors';
+import { BLUES, GREENS, REDS, YELLOWS_ORANGES, getColor as _getColor, getColorSet, COLOR_SETS } from './colors';
 
 // ============================================
 // TIPOS DE TEMA
@@ -16,7 +16,8 @@ export const THEME_TYPES = {
 export const COLORS = {
   neon: {
     primary: GREENS.neon.hex,
-    primaryRgba: `rgba(${GREENS.neon.rgb}`,
+    primaryRgb: `${GREENS.neon.rgb}`,
+    primaryRgba: `rgba(${GREENS.neon.rgb}, 1)`,
     gradient: {
       from: GREENS.neon.hex,
       via: GREENS.neon.light,
@@ -26,7 +27,8 @@ export const COLORS = {
   },
   normal: {
     primary: BLUES.sky.hex,
-    primaryRgba: `rgba(${BLUES.sky.rgb}`,
+    primaryRgb: `${BLUES.sky.rgb}`,
+    primaryRgba: `rgba(${BLUES.sky.rgb}, 1)`,
     gradient: {
       from: BLUES.sky.hex,
       via: BLUES.sky.light,

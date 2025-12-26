@@ -1,17 +1,19 @@
 import { RotateCcw, Undo2 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useBottleSortGame } from '../../hooks/useBottleSortGame';
+import { useUsername, useLeaderboard, useLeaderboardSubmission } from '../../hooks/useGameHelpers';
 import { OutlineButton, DangerButton } from '../ui/GameButtons';
 import { ScoreBadge, BadgeGroup } from '../ui/GameBadges';
 import { GameTitle, GameHeader } from '../ui/GameLayout';
 import { GameContainer, GameControls } from './shared/GameContainer';
 import VictoryBanner from './shared/VictoryBanner';
 import BottleGrid from './bottlesort/BottleGrid';
+import UsernameInput from '../ui/UsernameInput';
+import LocalLeaderboard from '../ui/LocalLeaderboard';
 
 export default function BottleSortGame({ setCurrentGame }) {
   const { t } = useLanguage();
   
-  // Toda la lógica del juego en un custom hook
   const {
     level,
     moves,
@@ -26,6 +28,12 @@ export default function BottleSortGame({ setCurrentGame }) {
     nextLevel
   } = useBottleSortGame();
 
+  const { username } = useUsername();
+  const { board } = useLeaderboard('bottlesort');
+  
+  // Auto-submit cuando gana
+  useLeaderboardSubmission('bottlesort', username, isWon, level);
+
   return (
     <GameContainer>
         
@@ -34,6 +42,7 @@ export default function BottleSortGame({ setCurrentGame }) {
           onBack={() => setCurrentGame(null)}
           backLabel={t.bottleGame.backToGames}
         >
+          <UsernameInput />
           <BadgeGroup>
             <ScoreBadge label={t.bottleGame.level} value={level} />
             <ScoreBadge label={t.bottleGame.moves} value={moves} />
@@ -74,6 +83,7 @@ export default function BottleSortGame({ setCurrentGame }) {
             {t.bottleGame.restart}
           </DangerButton>
         </GameControls>
+        <LocalLeaderboard entries={board} title="BottleSort - Puntuaciones (local)" />
     </GameContainer>
   );
 }

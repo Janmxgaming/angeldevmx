@@ -1,12 +1,34 @@
 import { useLanguage } from '../context/LanguageContext';
+import { useThemeStyles } from '../hooks/useThemeStyles';
 import { ABOUT_CONTENT } from '../config/content';
-import { User, Github, Twitter, Instagram, Code, Award, Sparkles } from 'lucide-react';
+import { User, Github, Twitter, Instagram, Code, Award, Sparkles, Briefcase } from 'lucide-react';
+
+// Helper para traducir objetos
+function translateObject(obj, lang) {
+  if (!obj) return obj;
+  if (typeof obj !== 'object') return obj;
+  
+  // Si el objeto tiene la estructura {es, en}, retornar el idioma correcto
+  if (Object.prototype.hasOwnProperty.call(obj, 'es') && Object.prototype.hasOwnProperty.call(obj, 'en')) {
+    return obj[lang] || obj.es;
+  }
+  
+  // Si es un array, traducir cada elemento
+  if (Array.isArray(obj)) {
+    return obj.map(item => translateObject(item, lang));
+  }
+  
+  // Si es un objeto, traducir cada propiedad
+  const result = {};
+  for (const key in obj) {
+    result[key] = translateObject(obj[key], lang);
+  }
+  return result;
+}
 
 export default function AboutPage() {
   const { theme, lang } = useLanguage();
-  const isNeon = theme === 'neon';
-  const primaryColor = isNeon ? '#00ff41' : '#0EA5E9';
-  const primaryColorRgba = isNeon ? 'rgba(0, 255, 65' : 'rgba(14, 165, 233';
+  const { primary: primaryColor, primaryRgb, isNeon } = useThemeStyles();
 
   // Obtener contenido traducido
   const intro = translateObject(ABOUT_CONTENT.intro, lang);
@@ -31,7 +53,7 @@ export default function AboutPage() {
               className="w-32 h-32 mx-auto rounded-full flex items-center justify-center mb-6 transition-all duration-500"
               style={{
                 background: `linear-gradient(135deg, ${primaryColor}, ${isNeon ? '#00cc33' : '#0284C7'})`,
-                boxShadow: `0 0 60px ${primaryColorRgba}, 0.6)`
+                boxShadow: `0 0 60px rgba(${primaryRgb}, 0.6)`
               }}
             >
               <User size={64} className={isNeon ? 'text-black' : 'text-white'} />
@@ -45,7 +67,7 @@ export default function AboutPage() {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
-                filter: `drop-shadow(0 0 30px ${primaryColorRgba}, 0.6))`
+                filter: `drop-shadow(0 0 30px rgba(${primaryRgb}, 0.6))`
               }}
             >
               {intro.title}
@@ -102,10 +124,10 @@ export default function AboutPage() {
             <div 
               className="inline-block mt-6 px-6 py-3 rounded-full font-semibold transition-all duration-500"
               style={{
-                background: `${primaryColorRgba}, 0.2)`,
+                backgroundColor: `rgba(${primaryRgb}, 0.2)`,
                 border: `2px solid ${primaryColor}`,
                 color: primaryColor,
-                boxShadow: `0 0 20px ${primaryColorRgba}, 0.4)`
+                boxShadow: `0 0 20px rgba(${primaryRgb}, 0.4)`
               }}
             >
               {availability.message}
@@ -127,9 +149,9 @@ export default function AboutPage() {
                 key={index}
                 className="p-6 rounded-xl border-2 transition-all duration-300 hover:scale-105"
                 style={{
-                  background: `${primaryColorRgba}, 0.05)`,
-                  borderColor: `${primaryColorRgba}, 0.3)`,
-                  boxShadow: `0 4px 20px ${primaryColorRgba}, 0.1)`
+                  backgroundColor: `rgba(${primaryRgb}, 0.05)`,
+                  borderColor: `rgba(${primaryRgb}, 0.3)`,
+                  boxShadow: `0 4px 20px rgba(${primaryRgb}, 0.1)`
                 }}
               >
                 <div className="flex items-start gap-4">
@@ -164,9 +186,9 @@ export default function AboutPage() {
                 key={index}
                 className="p-6 rounded-xl border-2 transition-all duration-300 hover:-translate-y-2"
                 style={{
-                  background: `${primaryColorRgba}, 0.05)`,
-                  borderColor: `${primaryColorRgba}, 0.3)`,
-                  boxShadow: `0 4px 20px ${primaryColorRgba}, 0.1)`
+                  backgroundColor: `rgba(${primaryRgb}, 0.05)`,
+                  borderColor: `rgba(${primaryRgb}, 0.3)`,
+                  boxShadow: `0 4px 20px rgba(${primaryRgb}, 0.1)`
                 }}
               >
                 <div className="flex items-center gap-3 mb-4">
@@ -201,9 +223,9 @@ export default function AboutPage() {
                 key={index}
                 className="p-6 rounded-xl border-2 transition-all duration-300"
                 style={{
-                  background: `${primaryColorRgba}, 0.05)`,
-                  borderColor: `${primaryColorRgba}, 0.3)`,
-                  boxShadow: `0 4px 20px ${primaryColorRgba}, 0.1)`
+                  backgroundColor: `rgba(${primaryRgb}, 0.05)`,
+                  borderColor: `rgba(${primaryRgb}, 0.3)`,
+                  boxShadow: `0 4px 20px rgba(${primaryRgb}, 0.1)`
                 }}
               >
                 <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
@@ -211,13 +233,13 @@ export default function AboutPage() {
                     <h3 className="text-2xl font-bold text-white mb-1">{exp.title}</h3>
                     <p className="text-gray-400">{exp.company}</p>
                   </div>
-                  <span 
-                    className="text-sm font-semibold px-4 py-2 rounded-full mt-2 md:mt-0"
-                    style={{
-                      background: `${primaryColorRgba}, 0.2)`,
-                      color: primaryColor
-                    }}
-                  >
+                    <span 
+                      className="text-sm font-semibold px-4 py-2 rounded-full mt-2 md:mt-0"
+                      style={{
+                        backgroundColor: `rgba(${primaryRgb}, 0.2)`,
+                        color: primaryColor
+                      }}
+                    >
                     {exp.period}
                   </span>
                 </div>
@@ -230,7 +252,7 @@ export default function AboutPage() {
                         key={i}
                         className="px-3 py-1 rounded-full text-sm border"
                         style={{
-                          borderColor: `${primaryColorRgba}, 0.5)`,
+                          borderColor: `rgba(${primaryRgb}, 0.5)`,
                           color: primaryColor
                         }}
                       >
@@ -270,9 +292,9 @@ export default function AboutPage() {
                 key={index}
                 className="p-6 rounded-xl border-2 text-center transition-all duration-300 hover:scale-105"
                 style={{
-                  background: `${primaryColorRgba}, 0.05)`,
-                  borderColor: `${primaryColorRgba}, 0.3)`,
-                  boxShadow: `0 4px 20px ${primaryColorRgba}, 0.1)`
+                  backgroundColor: `rgba(${primaryRgb}, 0.05)`,
+                  borderColor: `rgba(${primaryRgb}, 0.3)`,
+                  boxShadow: `0 4px 20px rgba(${primaryRgb}, 0.1)`
                 }}
               >
                 <div className="text-5xl mb-4">{value.icon}</div>
@@ -286,27 +308,4 @@ export default function AboutPage() {
       </div>
     </div>
   );
-}
-
-// Helper para traducir objetos
-function translateObject(obj, lang) {
-  if (!obj) return obj;
-  if (typeof obj !== 'object') return obj;
-  
-  // Si el objeto tiene la estructura {es, en}, retornar el idioma correcto
-  if (Object.prototype.hasOwnProperty.call(obj, 'es') && Object.prototype.hasOwnProperty.call(obj, 'en')) {
-    return obj[lang] || obj.es;
-  }
-  
-  // Si es un array, traducir cada elemento
-  if (Array.isArray(obj)) {
-    return obj.map(item => translateObject(item, lang));
-  }
-  
-  // Si es un objeto, traducir cada propiedad
-  const result = {};
-  for (const key in obj) {
-    result[key] = translateObject(obj[key], lang);
-  }
-  return result;
 }

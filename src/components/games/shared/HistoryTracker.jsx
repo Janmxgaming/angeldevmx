@@ -11,7 +11,7 @@ export default function HistoryTracker({
   emptyMessage,
   isVisible = true 
 }) {
-  const { primary, primaryRgba } = useThemeStyles();
+  const { primary, primaryRgba: _primaryRgba, primaryRgb } = useThemeStyles();
   
   if (!isVisible || items.length === 0) return null;
 
@@ -26,9 +26,9 @@ export default function HistoryTracker({
             key={idx}
             className="px-4 py-2 rounded-lg border-2 transition-all duration-300"
             style={{
-              backgroundColor: `${primaryRgba}, 0.1)`,
+              backgroundColor: `rgba(${primaryRgb}, 0.1)`,
               borderColor: item.isSuccess ? '#10b981' : primary,
-              boxShadow: `0 0 10px ${item.isSuccess ? 'rgba(16, 185, 129, 0.3)' : primaryRgba + ', 0.2)'}`
+              boxShadow: `0 0 10px ${item.isSuccess ? 'rgba(16, 185, 129, 0.3)' : `rgba(${primaryRgb}, 0.2)`}`
             }}
           >
             {renderItem ? renderItem(item, idx) : (

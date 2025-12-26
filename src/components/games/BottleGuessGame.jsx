@@ -5,6 +5,9 @@ import { useBottleGame } from '../../hooks/useBottleGame';
 import { GradientButton, DangerButton } from '../ui/GameButtons';
 import { ScoreBadge, BadgeGroup } from '../ui/GameBadges';
 import { GameTitle, GameSubtitle, GameHeader } from '../ui/GameLayout';
+import UsernameInput from '../ui/UsernameInput';
+import { useLeaderboard, useUsername, useLeaderboardSubmission } from '../../hooks/useGameHelpers';
+import LocalLeaderboard from '../ui/LocalLeaderboard';
 import { GameContainer, GameControls } from './shared/GameContainer';
 import InfoPanel from './shared/InfoPanel';
 import HistoryTracker from './shared/HistoryTracker';
@@ -14,9 +17,8 @@ import DraggableBottle from './bottle/DraggableBottle';
 
 export default function BottleGuessGame({ setCurrentGame }) {
   const { t } = useLanguage();
-  const { primary, primaryRgba } = useThemeStyles();
+  const { primary, primaryRgba, primaryRgb } = useThemeStyles();
   
-  // Toda la lógica del juego en un custom hook
   const {
     bottles,
     userOrder,
@@ -27,7 +29,7 @@ export default function BottleGuessGame({ setCurrentGame }) {
     showAnswer,
     lastSubmitFeedback,
     totalWins,
-    currentStreak,
+    currentStreak: _currentStreak,
     maxStreak,
     initGame,
     handleDragStart,
@@ -35,6 +37,12 @@ export default function BottleGuessGame({ setCurrentGame }) {
     handleDrop,
     handleSubmit
   } = useBottleGame();
+
+  const { username } = useUsername();
+  const { board } = useLeaderboard('bottleguess');
+  
+  // Auto-submit cuando gana (usar victorias como score)
+  useLeaderboardSubmission('bottleguess', username, isWon, totalWins);
 
   return (
     <GameContainer>
@@ -44,6 +52,7 @@ export default function BottleGuessGame({ setCurrentGame }) {
           onBack={() => setCurrentGame(null)}
           backLabel={t.bottleGuessGame.backToGames}
         >
+          <UsernameInput />
           <BadgeGroup>
             <ScoreBadge label={t.bottleGuessGame.attempts} value={attempts} />
             <ScoreBadge 
@@ -109,8 +118,8 @@ export default function BottleGuessGame({ setCurrentGame }) {
             className="relative p-8 rounded-2xl border-4 mx-auto max-w-2xl mb-8"
             style={{
               borderColor: primary,
-              background: `${primaryRgba}, 0.1)`,
-              boxShadow: `0 0 30px ${primaryRgba}, 0.3)`
+              backgroundColor: `rgba(${primaryRgb}, 0.06)`,
+              boxShadow: `0 0 30px ${primaryRgba}`
             }}
           >
             <div className="flex justify-center gap-4">
@@ -141,6 +150,7 @@ export default function BottleGuessGame({ setCurrentGame }) {
               {t.bottleGuessGame.tryAgain}
             </DangerButton>
           </GameControls>
+          <LocalLeaderboard entries={board} title="Bottle Guess - Puntuaciones (local)" />
         </div>
     </GameContainer>
   );

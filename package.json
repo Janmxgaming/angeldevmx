@@ -2,14 +2,12 @@
   "name": "angeldevmx",
   "private": true,
   "version": "0.0.0",
-  "homepage": "https://Janmxgaming.github.io/angeldevmx",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "deploy": "npm run build && gh-pages -d dist"
+    "preview": "vite preview"
   },
   "dependencies": {
     "lucide-react": "^0.562.0",

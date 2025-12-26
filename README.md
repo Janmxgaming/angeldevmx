@@ -1,18 +1,24 @@
 # 🎮 AngelDevMX - Portfolio & Game Hub
 
-Portfolio personal con sistema de juegos interactivos construido con React + Vite.
+Portfolio personal interactivo con sistema de juegos modulares construido con **React + Vite** y **Node.js**.
 
-## ✨ Características
+---
 
-- 🎯 **Sistema de juegos modular** - Agrega juegos en minutos
+## ✨ Características Principales
+
+- 🎯 **Sistema de juegos modular** - Arquitectura escalable y fácil de mantener
 - ⚡ **Lazy loading automático** - Carga bajo demanda con code splitting
-- 🎨 **Sistema de colores centralizado** - 25+ colores organizados
-- 📊 **Estadísticas persistentes** - LocalStorage para progreso y logros
+- 🎨 **Sistema de colores dinámico** - 25+ colores temáticos organizados
+- 📊 **Estadísticas persistentes** - LocalStorage + Leaderboard con backend
 - 🌍 **Multiidioma** - Español e Inglés
 - 🌈 **Temas dinámicos** - Modo Normal y Neón
-- 📱 **Totalmente responsive** - Optimizado para móviles
+- 📱 **Totalmente responsive** - Optimizado para dispositivos móviles
+
+---
 
 ## 🚀 Inicio Rápido
+
+### Frontend
 
 ```bash
 # Instalar dependencias
@@ -25,29 +31,290 @@ npm run dev
 npm run build
 ```
 
-## 📖 Documentación
+### Backend (Opcional - para Leaderboard)
 
-- **[QUICK_START.md](./QUICK_START.md)** - Ejemplos prácticos de uso
-- **[SCALABILITY_GUIDE.md](./SCALABILITY_GUIDE.md)** - Sistema completo explicado
-- **[COLORS_GUIDE.md](./COLORS_GUIDE.md)** - Paleta de colores
+```bash
+# Ir a la carpeta backend
+cd backend
 
-## 🎮 Agregar un Nuevo Juego
+# Instalar dependencias
+npm install
 
-1. Crea el componente (usa `GameTemplate.jsx` como base)
-2. Activa en `src/config/games.js`
-3. ¡Listo! Aparece automáticamente
+# Iniciar servidor
+npm run dev
+# O en producción
+npm start
+```
 
-```javascript
-// config/games.js
-const MyGame = () => import('../components/games/MyGame');
+El backend corre en `http://localhost:3001` y proporciona la API de leaderboard.
 
-myGame: {
-  id: 'myGame',
-  component: MyGame,
-  enabled: true,  // ← Cambiar a true
-  // ... metadata
+---
+
+## 📁 Estructura del Proyecto
+
+```
+angeldevmx/
+├── src/
+│   ├── components/        # Componentes React
+│   │   ├── games/         # Juegos individuales
+│   │   ├── layout/        # Header, Footer, etc.
+│   │   └── ui/            # Botones, Cards, etc.
+│   ├── config/            # Configuraciones centralizadas
+│   │   ├── games.js       # Registro de juegos
+│   │   └── content.js     # Contenido estático
+│   ├── constants/         # Constantes del proyecto
+│   ├── hooks/             # Custom hooks modulares
+│   │   ├── useLocalStorage.js
+│   │   ├── useGameState.js
+│   │   ├── useUsername.js
+│   │   └── useLeaderboard.js
+│   ├── pages/             # Páginas principales
+│   ├── services/          # APIs y servicios externos
+│   └── utils/             # Utilidades y helpers
+├── backend/
+│   ├── server.js          # Servidor Express
+│   ├── routes.js          # Definición de rutas
+│   └── database.js        # Lógica de base de datos
+└── public/                # Archivos estáticos
+
+```
+
+---
+
+## 🎮 Cómo Agregar un Nuevo Juego
+
+### Paso 1: Crear el componente del juego
+
+```jsx
+// src/components/games/MyNewGame.jsx
+import { useEffect } from 'react';
+import GameLayout from '../ui/GameLayout';
+import { useGameStats } from '../../hooks/useGameState';
+
+export default function MyNewGame({ setCurrentGame }) {
+  const { incrementPlays } = useGameStats('myNewGame');
+  
+  useEffect(() => {
+    incrementPlays();
+  }, [incrementPlays]);
+  
+  return (
+    <GameLayout title="🎯 Mi Nuevo Juego" onBack={() => setCurrentGame(null)}>
+      {/* Tu lógica de juego aquí */}
+    </GameLayout>
+  );
 }
 ```
+
+### Paso 2: Registrar el juego en la configuración
+
+```javascript
+// src/config/games.js
+export const GAME_REGISTRY = {
+  // ... otros juegos
+  myNewGame: {
+    id: 'myNewGame',
+    component: () => import('../components/games/MyNewGame.jsx'),
+    enabled: true,  // ← Activar el juego
+    category: 'puzzle',
+    difficulty: 'medium',
+    meta: {
+      icon: '🎯',
+      color: 'cyan',
+      version: '1.0.0'
+    },
+    features: {
+      multiplayer: false,
+      leaderboard: true
+    }
+  }
+};
+```
+
+### Paso 3: Agregar traducciones
+
+```javascript
+// src/utils/translations.js
+export const translations = {
+  myNewGame: {
+    title: { es: 'Mi Nuevo Juego', en: 'My New Game' },
+    description: { es: 'Descripción...', en: 'Description...' }
+  }
+};
+```
+
+¡Listo! El juego aparecerá automáticamente en la interfaz.
+
+---
+
+## 🎨 Sistema de Colores
+
+El proyecto usa un sistema de colores dinámico centralizado en [src/constants/colors.js](src/constants/colors.js).
+
+**Colores disponibles:**
+- Básicos: `red`, `blue`, `green`, `yellow`, `purple`, `pink`
+- Extendidos: `cyan`, `emerald`, `amber`, `rose`, `indigo`, `teal`
+- Neón: `neon-pink`, `neon-cyan`, `neon-green`, `neon-purple`
+
+**Uso:**
+```javascript
+import { COLORS } from './constants/colors';
+
+const myColor = COLORS.cyan.primary;  // #06b6d4
+```
+
+---
+
+## 🔧 Hooks Personalizados
+
+### `useLocalStorage(key, initialValue)`
+Persistencia automática en localStorage.
+
+```javascript
+const [value, setValue, removeValue] = useLocalStorage('myKey', 'default');
+```
+
+### `useGameStats(gameId)`
+Gestión de estadísticas de juego.
+
+```javascript
+const { stats, incrementPlays, recordWin, updateBestScore } = useGameStats('myGame');
+```
+
+### `useUsername()`
+Gestión de nombre de usuario con validación.
+
+```javascript
+const { username, setUsername, isLocked } = useUsername();
+```
+
+### `useLeaderboard(gameId)`
+Leaderboard local y servidor con sincronización automática.
+
+```javascript
+const { board, submitScore, serverAvailable } = useLeaderboard('myGame');
+```
+
+---
+
+## 🌍 API Backend
+
+### Endpoints Disponibles
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/health` | Health check del servidor |
+| GET | `/api/leaderboard/:gameId` | Obtener top 50 del juego |
+| POST | `/api/leaderboard/:gameId` | Enviar nueva puntuación |
+| GET | `/api/leaderboards` | Obtener todos los leaderboards |
+| DELETE | `/api/leaderboard/:gameId` | Limpiar leaderboard |
+
+### Ejemplo de uso
+
+```javascript
+// Enviar puntuación
+const response = await fetch('http://localhost:3001/api/leaderboard/myGame', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ username: 'Player1', score: 1000 })
+});
+```
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+
+### Frontend
+- **React 18** - Librería UI
+- **Vite** - Build tool y dev server
+- **Tailwind CSS** - Estilos utility-first
+- **ESLint** - Linting
+
+### Backend
+- **Node.js** - Runtime
+- **Express** - Framework web
+- **CORS** - Manejo de CORS
+- **dotenv** - Variables de entorno
+
+---
+
+## 📦 Scripts Disponibles
+
+### Frontend
+```bash
+npm run dev          # Servidor de desarrollo
+npm run build        # Build para producción
+npm run preview      # Preview del build
+npm run lint         # Ejecutar ESLint
+```
+
+### Backend
+```bash
+npm start            # Iniciar servidor (producción)
+npm run dev          # Modo desarrollo con hot reload
+```
+
+---
+
+## 🌐 Variables de Entorno
+
+Crea un archivo `.env` en la raíz del backend:
+
+```env
+PORT=3001
+NODE_ENV=development
+```
+
+Para el frontend, crea `.env` en la raíz:
+
+```env
+VITE_LEADERBOARD_API=http://localhost:3001/api/leaderboard
+```
+
+---
+
+## 🚀 Despliegue
+
+### Frontend (Vercel/Netlify)
+```bash
+npm run build
+# El contenido de /dist está listo para desplegar
+```
+
+### Backend (Railway/Render/Heroku)
+El backend está listo para desplegar en cualquier plataforma que soporte Node.js.
+
+---
+
+## 📄 Licencia
+
+MIT License - Puedes usar este proyecto libremente.
+
+---
+
+## 👤 Autor
+
+**José Ángel** - [@angeldevmx](https://github.com/angeldevmx)
+
+- 🌐 GitHub: [github.com/angeldevmx](https://github.com/angeldevmx)
+- 𝕏 Twitter: [@angeldevmx](https://x.com/angeldevmx)
+- 📷 Instagram: [@angeldevmx](https://instagram.com/angeldevmx)
+
+---
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Si encuentras un bug o tienes una sugerencia:
+
+1. Fork el proyecto
+2. Crea una rama (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+---
+
+**¡Gracias por visitar mi proyecto! 🎮✨**
 
 ## 📁 Estructura
 

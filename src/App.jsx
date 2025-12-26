@@ -1,12 +1,3 @@
-import { useEffect } from 'react';
-  // Ejecutar incrementGamePlays solo cuando inicia un juego
-  useEffect(() => {
-    if (currentGame && GameComponent) {
-      incrementGamePlays(currentGame);
-    }
-    // Solo se ejecuta cuando currentGame cambia y hay GameComponent
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentGame, GameComponent]);
 import { useState, Suspense } from 'react';
 import LanguageProvider from './context/LanguageContext';
 import { useLanguage } from './context/LanguageContext';
@@ -16,7 +7,7 @@ import GamesPage from './pages/GamesPage';
 import AboutPage from './pages/AboutPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ContactPage from './pages/ContactPage';
-import { GAME_REGISTRY, incrementGamePlays } from './config/games';
+import { GAME_REGISTRY } from './config/games';
 import { useLazyComponent } from './hooks/useGameHelpers';
 
 // Componente de loading para juegos

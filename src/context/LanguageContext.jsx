@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { translations } from '../utils/translations';
 
 const LanguageContext = createContext();
@@ -15,6 +15,15 @@ export function useLanguage() {
 export default function LanguageProvider({ children }) {
   const [lang, setLang] = useState('es');
   const [theme, setTheme] = useState('neon'); // 'neon' o 'professional'
+
+  // Aplicar data-theme al body para que el scrollbar cambie de color
+  useEffect(() => {
+    const themeMap = {
+      'neon': 'neon',
+      'professional': 'cyan'
+    };
+    document.documentElement.setAttribute('data-theme', themeMap[theme] || 'neon');
+  }, [theme]);
 
   const toggleLanguage = () => {
     setLang(prevLang => prevLang === 'es' ? 'en' : 'es');

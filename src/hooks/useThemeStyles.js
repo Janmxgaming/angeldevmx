@@ -16,6 +16,7 @@ export function useThemeStyles() {
     return {
       primary: colors.primary,
       primaryRgba: colors.primaryRgba,
+      primaryRgb: colors.primaryRgb,
       gradient: colors.gradient,
       secondary: colors.secondary,
       isNeon

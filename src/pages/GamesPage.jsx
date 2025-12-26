@@ -2,7 +2,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { useThemeStyles } from '../hooks/useThemeStyles';
 import { getTitleStyle, getDividerStyle } from '../utils/styleHelpers';
 import GameCard from '../components/ui/GameCard';
-import { getEnabledGames, GAME_REGISTRY } from '../config/games';
+import { GAME_REGISTRY } from '../config/games';
 
 export default function GamesPage({ setCurrentGame }) {
   const { t, theme } = useLanguage();

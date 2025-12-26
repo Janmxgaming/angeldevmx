@@ -5,6 +5,9 @@ import { GAME_MODES, DIFFICULTY_LEVELS, formatOptionsForSelector } from '../../c
 import { GradientButton, DangerButton } from '../ui/GameButtons';
 import { ScoreBadge, NeutralBadge, BadgeGroup } from '../ui/GameBadges';
 import { GameTitle, GameHeader } from '../ui/GameLayout';
+import UsernameInput from '../ui/UsernameInput';
+import { useLeaderboard, useLeaderboardSubmission, useUsername } from '../../hooks/useGameHelpers';
+import LocalLeaderboard from '../ui/LocalLeaderboard';
 import { GameContainer, GameControls } from './shared/GameContainer';
 import OptionSelector from './shared/OptionSelector';
 import TicTacToeBoard from './tictactoe/TicTacToeBoard';
@@ -22,7 +25,6 @@ export default function TicTacToeGame({ setCurrentGame }) {
     gameMode,
     difficulty,
     scores,
-    currentStreak,
     maxStreak,
     handleCellClick,
     setGameMode,
@@ -30,6 +32,13 @@ export default function TicTacToeGame({ setCurrentGame }) {
     resetGame,
     resetAll
   } = useTicTacToeGame();
+
+  const { username } = useUsername();
+  const { board: leaderboardEntries } = useLeaderboard('tictactoe');
+  
+  // Enviar score cuando hay victoria (usar wins del jugador como score)
+  const playerWins = winner === 'X' ? scores.X : winner === 'O' ? scores.O : 0;
+  useLeaderboardSubmission('tictactoe', username, !!winner && winner !== 'draw', playerWins);
 
   // Opciones formateadas con traducciones
   const modeOptions = formatOptionsForSelector(GAME_MODES, t.ticTacToeGame);
@@ -43,6 +52,7 @@ export default function TicTacToeGame({ setCurrentGame }) {
           onBack={() => setCurrentGame(null)}
           backLabel={t.ticTacToeGame.backToGames}
         >
+          <UsernameInput />
           {gameMode && (
             <BadgeGroup>
               <ScoreBadge label="X" value={scores.X} />
@@ -105,6 +115,7 @@ export default function TicTacToeGame({ setCurrentGame }) {
                 {t.ticTacToeGame.backToMenu}
               </DangerButton>
             </GameControls>
+            <LocalLeaderboard entries={leaderboardEntries} title="TicTacToe - Puntuaciones (local)" />
           </>
         )}
     </GameContainer>

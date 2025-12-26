@@ -1,7 +1,8 @@
+import { useThemeStyles } from '../../hooks/useThemeStyles';
+
 export default function GameCard({ game, onPlay, translations, theme }) {
   const isNeon = theme === 'neon';
-  const primaryColor = isNeon ? '#00ff41' : '#0EA5E9';
-  const primaryColorRgba = isNeon ? 'rgba(0, 255, 65' : 'rgba(14, 165, 233';
+  const { primary: primaryColor, primaryRgba: _primaryRgba, primaryRgb } = useThemeStyles();
   
   return (
     <div
@@ -16,22 +17,22 @@ export default function GameCard({ game, onPlay, translations, theme }) {
         }`}
         style={{
           borderColor: game.available 
-            ? `${primaryColorRgba}, 0.3)` 
+            ? `rgba(${primaryRgb}, 0.3)` 
             : 'rgba(75, 85, 99, 0.3)',
           boxShadow: game.available 
-            ? `0 0 0 ${primaryColorRgba}, 0)`
+            ? `0 0 0 rgba(${primaryRgb}, 0)`
             : 'none'
         }}
         onMouseEnter={(e) => {
           if (game.available) {
             e.currentTarget.style.borderColor = primaryColor;
-            e.currentTarget.style.boxShadow = `0 0 30px ${primaryColorRgba}, 0.5)`;
+            e.currentTarget.style.boxShadow = `0 0 30px rgba(${primaryRgb}, 0.5)`;
           }
         }}
         onMouseLeave={(e) => {
           if (game.available) {
-            e.currentTarget.style.borderColor = `${primaryColorRgba}, 0.3)`;
-            e.currentTarget.style.boxShadow = `0 0 0 ${primaryColorRgba}, 0)`;
+            e.currentTarget.style.borderColor = `rgba(${primaryRgb}, 0.3)`;
+            e.currentTarget.style.boxShadow = `0 0 0 rgba(${primaryRgb}, 0)`;
           }
         }}
       >
@@ -44,7 +45,7 @@ export default function GameCard({ game, onPlay, translations, theme }) {
             style={{
               background: `linear-gradient(to right, ${primaryColor}, ${isNeon ? '#00cc33' : '#0284C7'})`,
               color: isNeon ? '#000' : '#fff',
-              boxShadow: `0 0 20px ${primaryColorRgba}, 0.5)`
+              boxShadow: `0 0 20px rgba(${primaryRgb}, 0.5)`
             }}
           >
             {translations.play} →

@@ -13,7 +13,7 @@ export default function VictoryBanner({
   actionIcon,
   isVisible = true 
 }) {
-  const { primary, primaryRgba } = useThemeStyles();
+  const { primary, primaryRgba: _primaryRgba, primaryRgb } = useThemeStyles();
 
   if (!isVisible) return null;
 
@@ -21,9 +21,9 @@ export default function VictoryBanner({
     <div 
       className="mb-8 p-6 rounded-2xl border-2 text-center animate-pulse transition-all duration-500"
       style={{
-        background: `linear-gradient(to right, ${primaryRgba}, 0.2), ${primaryRgba}, 0.3))`,
+        background: `linear-gradient(to right, ${primary}, rgba(${primaryRgb}, 0.12))`,
         borderColor: primary,
-        boxShadow: `0 0 40px ${primaryRgba}, 0.6)`
+        boxShadow: `0 0 40px rgba(${primaryRgb}, 0.6)`
       }}
     >
       <h2 

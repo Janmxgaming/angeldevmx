@@ -5,7 +5,7 @@ import { useThemeStyles } from '../../../hooks/useThemeStyles';
  * Reutilizable en cualquier juego que necesite mostrar retroalimentación
  */
 export default function InfoPanel({ message, submessage, isVisible = true }) {
-  const { primary, primaryRgba } = useThemeStyles();
+  const { primary, primaryRgba: _primaryRgba, primaryRgb } = useThemeStyles();
   
   if (!isVisible) return null;
 
@@ -13,9 +13,9 @@ export default function InfoPanel({ message, submessage, isVisible = true }) {
     <div 
       className="mb-6 p-4 rounded-xl border-2 text-center transition-all duration-500 animate-pulse"
       style={{
-        backgroundColor: `${primaryRgba}, 0.15)`,
+        backgroundColor: `rgba(${primaryRgb}, 0.15)`,
         borderColor: primary,
-        boxShadow: `0 0 20px ${primaryRgba}, 0.4)`
+        boxShadow: `0 0 20px rgba(${primaryRgb}, 0.4)`
       }}
     >
       <p className="text-xl font-bold" style={{ color: primary }}>

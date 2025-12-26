@@ -7,7 +7,9 @@
 
 import { useState, useEffect } from 'react';
 import GameLayout from '../ui/GameLayout';
-import { useGameStats } from '../../hooks/useGameHelpers';
+import { useGameStats, useLeaderboard, useUsername, useLeaderboardSubmission } from '../../hooks/useGameHelpers';
+import UsernameInput from '../ui/UsernameInput';
+import LocalLeaderboard from '../ui/LocalLeaderboard';
 
 export default function GameTemplate({ setCurrentGame }) {
   // TODO: Cambiar 'gameTemplate' por tu ID de juego (debe coincidir con config/games.js)
@@ -25,6 +27,12 @@ export default function GameTemplate({ setCurrentGame }) {
   useEffect(() => {
     incrementPlays();
   }, [incrementPlays]);
+  
+  const { username } = useUsername();
+  const { board } = useLeaderboard(gameId);
+  
+  // Auto-submit al ganar
+  useLeaderboardSubmission(gameId, username, gameState === 'won', score);
   
   // TODO: Implementa la lógica de tu juego
   const startGame = () => {
@@ -74,6 +82,8 @@ export default function GameTemplate({ setCurrentGame }) {
             </div>
           </div>
         </div>
+        <UsernameInput />
+        <LocalLeaderboard entries={board} title="Puntuaciones (local)" />
         
         {/* TODO: Área del juego - reemplaza con tu UI */}
         <div className="bg-gray-900 rounded-xl p-8 mb-6 min-h-[400px] flex items-center justify-center">

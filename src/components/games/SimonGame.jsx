@@ -1,14 +1,18 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
-import GameLayout from '../ui/GameLayout';
-import { useGameStats } from '../../hooks/useGameHelpers';
+import { useGameStats, useUsername, useLeaderboard } from '../../hooks/useGameHelpers';
 import { useThemeStyles } from '../../hooks/useThemeStyles';
+import UsernameInput from '../ui/UsernameInput';
+import LocalLeaderboard from '../ui/LocalLeaderboard';
 import { getColor } from '../../constants/colors';
 
 export default function SimonGame({ setCurrentGame }) {
-  const { theme } = useLanguage();
+  useLanguage();
   const { primary, primaryRgba } = useThemeStyles();
-  const { stats, incrementPlays, recordWin } = useGameStats('simon');
+  const { stats, incrementPlays, recordWin, updateBestScore } = useGameStats('simon');
+  const { username } = useUsername();
+  const { board, submitScore, serverAvailable, syncing, syncFromServer } = useLeaderboard('simon');
   
   // Estados del juego
   const [gameState, setGameState] = useState('idle'); // idle, showing, waiting, correct, wrong, won
@@ -18,17 +22,20 @@ export default function SimonGame({ setCurrentGame }) {
   const [activeButton, setActiveButton] = useState(null);
   const [showingSequence, setShowingSequence] = useState(false);
   const [currentSpeed, setCurrentSpeed] = useState(800); // ms entre cada color
+  const [speedFlash, setSpeedFlash] = useState(false);
   
   const audioContext = useRef(null);
   const sequenceTimeoutRef = useRef(null);
   
   // Colores del Simon (usando nuestro sistema de colores) - memoizado para evitar recreación
+  // Simon colors: ensure four distinct colors (red, yellow, green, blue)
+  // Use 'neon' theme only for styling elsewhere — keep classic Simon colors
   const colors = useMemo(() => [
     { id: 0, name: 'red', color: getColor('red'), sound: 329.63 },
     { id: 1, name: 'yellow', color: getColor('yellow'), sound: 261.63 },
     { id: 2, name: 'green', color: getColor('green'), sound: 392.00 },
-    { id: 3, name: theme === 'neon' ? 'green' : 'blue', color: getColor(theme === 'neon' ? 'green' : 'blue'), sound: 440.00 }
-  ], [theme]);
+    { id: 3, name: 'blue', color: getColor('blue'), sound: 440.00 }
+  ], []);
   
   // Inicializar AudioContext
   useEffect(() => {
@@ -150,8 +157,12 @@ export default function SimonGame({ setCurrentGame }) {
         setCurrentLevel(newLevel);
         
         // Aumentar velocidad cada 5 niveles
-        const newSpeed = newLevel % 5 === 0 ? Math.max(300, currentSpeed - 100) : currentSpeed;
-        setCurrentSpeed(newSpeed);
+        const newSpeed = newLevel % 5 === 0 ? Math.max(200, currentSpeed - 150) : currentSpeed;
+        if (newSpeed !== currentSpeed) {
+          setCurrentSpeed(newSpeed);
+          setSpeedFlash(true);
+          setTimeout(() => setSpeedFlash(false), 800);
+        }
         
         setGameState('showing');
         addToSequence(sequence, newSpeed);
@@ -160,22 +171,25 @@ export default function SimonGame({ setCurrentGame }) {
   };
   
   // Manejar victoria
-  const handleWin = () => {
+  const handleWin = useCallback(() => {
     setGameState('won');
     if (currentLevel > (stats.bestScore || 0)) {
       recordWin(currentLevel, 0);
     }
-  };
+    submitScore({ username: username || 'Anon', score: currentLevel });
+  }, [currentLevel, stats.bestScore, recordWin, submitScore, username]);
   
   // Manejar game over
-  const handleGameOver = () => {
+  const handleGameOver = useCallback(() => {
+    updateBestScore(currentLevel);
     setGameState('wrong');
-    playSound(200, 500); // Sonido de error
+    playSound(200, 500);
+    submitScore({ username: username || 'Anon', score: currentLevel });
     
     setTimeout(() => {
       setGameState('idle');
     }, 2000);
-  };
+  }, [currentLevel, updateBestScore, playSound, submitScore, username]);
   
   // Reiniciar
   const resetGame = () => {
@@ -187,22 +201,40 @@ export default function SimonGame({ setCurrentGame }) {
   };
 
   return (
-    <GameLayout
-      title="🎵 Simon Dice"
-      onBack={() => setCurrentGame(null)}
-    >
+    <div className="min-h-screen pt-24 pb-12 px-4 bg-black">
+      <div className="max-w-7xl mx-auto">
+        
+        {/* Header con botón de volver */}
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setCurrentGame(null)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all hover:scale-105"
+              style={{
+                borderColor: primary,
+                color: primary,
+              }}
+            >
+              <ArrowLeft size={20} />
+              <span>Volver a Juegos</span>
+            </button>
+            <UsernameInput />
+          </div>
+        </div>
+
+        {/* Título */}
+        <h1 className="text-4xl md:text-5xl font-bold text-center mb-8 text-white">
+          🎵 Simon Dice
+        </h1>
+
       <div className="max-w-2xl mx-auto">
         
         {/* Panel de información */}
         <div className="bg-gray-800/50 rounded-lg p-4 mb-6">
-          <div className="grid grid-cols-2 gap-4 text-center text-white">
+          <div className="grid grid-cols-1 gap-4 text-center text-white">
             <div>
               <span className="text-gray-400 text-sm block">Nivel</span>
               <span className="font-bold text-2xl text-cyan-400">{currentLevel}</span>
-            </div>
-            <div>
-              <span className="text-gray-400 text-sm block">Mejor</span>
-              <span className="font-bold text-2xl text-yellow-400">{stats.bestScore || 0}</span>
             </div>
           </div>
         </div>
@@ -232,8 +264,8 @@ export default function SimonGame({ setCurrentGame }) {
                   onClick={startGame}
                   className="px-8 py-4 text-white text-xl font-bold rounded-lg hover:scale-105 transition-transform"
                   style={{
-                    background: `linear-gradient(135deg, ${primary} 0%, ${primaryRgba(0.7)} 100%)`,
-                    boxShadow: `0 10px 25px ${primaryRgba(0.3)}`
+                    background: `linear-gradient(135deg, ${primary} 0%, ${primaryRgba} 100%)`,
+                    boxShadow: `0 10px 25px ${primaryRgba}`
                   }}
                 >
                   Iniciar Juego
@@ -254,8 +286,8 @@ export default function SimonGame({ setCurrentGame }) {
                   onClick={resetGame}
                   className="px-6 py-3 text-white rounded-lg hover:scale-105 transition-transform"
                   style={{
-                    background: `linear-gradient(135deg, ${primary} 0%, ${primaryRgba(0.7)} 100%)`,
-                    boxShadow: `0 10px 25px ${primaryRgba(0.3)}`
+                    background: `linear-gradient(135deg, ${primary} 0%, ${primaryRgba} 100%)`,
+                    boxShadow: `0 10px 25px ${primaryRgba}`
                   }}
                 >
                   Jugar de Nuevo
@@ -264,35 +296,39 @@ export default function SimonGame({ setCurrentGame }) {
             </div>
           ) : (
             // Tablero del Simon
-            <div className="absolute inset-0 grid grid-cols-2 gap-2 p-4 bg-gray-900 rounded-xl">
+                <div className="absolute inset-0 grid grid-cols-2 gap-2 p-4 bg-gray-900 rounded-xl" style={{ perspective: '1200px' }}>
               {colors.map((color) => {
                 const isActive = activeButton === color.id;
                 const isWrong = gameState === 'wrong' && playerSequence[playerSequence.length - 1] === color.id;
-                
-                return (
-                  <button
-                    key={color.id}
-                    onClick={() => handleButtonClick(color.id)}
-                    disabled={showingSequence || gameState !== 'waiting'}
-                    className={`
-                      rounded-xl transition-all duration-150 transform
-                      ${showingSequence || gameState !== 'waiting' ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-95'}
-                      ${isActive ? 'scale-95' : 'scale-100'}
-                      ${isWrong ? 'animate-pulse' : ''}
-                    `}
-                    style={{
-                      backgroundColor: isActive ? color.color.hex : color.color.dark,
-                      opacity: isActive ? 1 : (isWrong ? 0.3 : 0.7),
-                      boxShadow: isActive ? `0 0 40px ${color.color.hex}` : 'none',
-                      border: `3px solid ${isActive ? color.color.light : color.color.dark}`
-                    }}
-                  />
-                );
+                    const rgb = color.color.rgb || '0,0,0';
+                    const baseHex = color.color.hex;
+                    const light = color.color.light;
+                    const dark = color.color.dark;
+                    const glow = `rgba(${rgb}, ${isActive ? 0.55 : 0.18})`;
+
+                    return (
+                      <button
+                        key={color.id}
+                        onClick={() => handleButtonClick(color.id)}
+                        disabled={showingSequence || gameState !== 'waiting'}
+                        className={`rounded-xl transition-transform duration-180 ease-out will-change-transform ${showingSequence || gameState !== 'waiting' ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                        style={{
+                          background: isActive
+                            ? `radial-gradient(circle at 30% 20%, rgba(${rgb},0.95), ${baseHex} 40%)`
+                            : `linear-gradient(135deg, ${light}, ${baseHex})`,
+                          opacity: isWrong ? 0.35 : 1,
+                          boxShadow: `${isActive ? `0 20px 60px ${glow}` : `0 10px 30px ${glow}`}, inset 0 -8px 18px rgba(0,0,0,0.25)` ,
+                          transform: isActive ? 'translateZ(30px) scale(1.03)' : 'translateZ(0) scale(1)',
+                          border: `3px solid ${isActive ? light : dark}`,
+                          transition: 'transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease'
+                        }}
+                      />
+                    );
               })}
               
               {/* Contador en el centro */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="bg-gray-950 rounded-full w-24 h-24 flex items-center justify-center border-4 border-gray-800">
+                <div className={`bg-gray-950 rounded-full w-24 h-24 flex items-center justify-center border-4 border-gray-800 ${speedFlash ? 'animate-pulse' : ''}`} style={{ boxShadow: speedFlash ? `0 0 40px ${primary}55, 0 10px 50px rgba(0,0,0,0.6)` : `0 6px 24px rgba(0,0,0,0.6)` }}>
                   <span className="text-white text-3xl font-bold">
                     {showingSequence ? '👀' : playerSequence.length}
                   </span>
@@ -323,8 +359,16 @@ export default function SimonGame({ setCurrentGame }) {
             <span className="text-yellow-400 text-4xl font-bold">{stats.bestScore || 0}</span>
           </div>
         </div>
+        <LocalLeaderboard 
+          entries={board} 
+          title="Simon - Puntuaciones" 
+          serverAvailable={serverAvailable}
+          syncing={syncing}
+          onSync={syncFromServer}
+        />
         
       </div>
-    </GameLayout>
+      </div>
+    </div>
   );
 }

@@ -1,0 +1,23 @@
+{
+  "name": "angeldevmx-backend",
+  "version": "1.0.0",
+  "description": "Backend API for AngelDevMX Leaderboard",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "api",
+    "leaderboard",
+    "express"
+  ],
+  "author": "AngelDevMX",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1"
+  }
+}

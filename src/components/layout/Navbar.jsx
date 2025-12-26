@@ -1,13 +1,12 @@
 import { Home, Gamepad2, User, FolderGit2, Mail, Globe } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import ThemeToggle from '../ui/ThemeToggle';
+import { useThemeStyles } from '../../hooks/useThemeStyles';
 
 export default function Navbar({ currentPage, setCurrentPage }) {
   const { lang, toggleLanguage, theme, t } = useLanguage();
+  const { primary: primaryColor, primaryRgba: _primaryRgba, primaryRgb } = useThemeStyles();
   const isNeon = theme === 'neon';
-  
-  const primaryColor = isNeon ? '#00ff41' : '#0EA5E9';
-  const primaryColorRgba = isNeon ? 'rgba(0, 255, 65' : 'rgba(14, 165, 233';
   
   const navItems = [
     { id: 'home', icon: Home, label: t.nav.home },
@@ -19,7 +18,7 @@ export default function Navbar({ currentPage, setCurrentPage }) {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b transition-colors duration-500"
-      style={{ borderColor: `${primaryColorRgba}, 0.2)` }}
+      style={{ borderColor: `rgba(${primaryRgb}, 0.2)` }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -44,7 +43,7 @@ export default function Navbar({ currentPage, setCurrentPage }) {
                 }`}
                 style={currentPage === item.id ? {
                   backgroundColor: primaryColor,
-                  boxShadow: `0 0 20px ${primaryColorRgba}, 0.5)`,
+                  boxShadow: `0 0 20px rgba(${primaryRgb}, 0.5)`,
                   color: isNeon ? '#000' : '#fff'
                 } : {
                   color: '#9ca3af'
@@ -74,9 +73,9 @@ export default function Navbar({ currentPage, setCurrentPage }) {
               onClick={toggleLanguage}
               className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-900 border transition-all duration-500 transform hover:scale-105"
               style={{
-                borderColor: `${primaryColorRgba}, 0.3)`,
+                borderColor: `rgba(${primaryRgb}, 0.3)`,
                 color: primaryColor,
-                boxShadow: `0 0 15px ${primaryColorRgba}, 0.2)`
+                boxShadow: `0 0 15px rgba(${primaryRgb}, 0.2)`
               }}
             >
               <Globe size={18} />
@@ -98,7 +97,7 @@ export default function Navbar({ currentPage, setCurrentPage }) {
               }`}
               style={currentPage === item.id ? {
                 backgroundColor: primaryColor,
-                boxShadow: `0 0 15px ${primaryColorRgba}, 0.5)`,
+                boxShadow: `0 0 15px rgba(${primaryRgb}, 0.5)`,
                 color: isNeon ? '#000' : '#fff'
               } : {}}
             >

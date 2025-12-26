@@ -10,7 +10,7 @@ export default function OptionSelector({
   onSelect,
   columns = 2 
 }) {
-  const { primary, primaryRgba } = useThemeStyles();
+  const { primary, primaryRgba: _primaryRgba, primaryRgb } = useThemeStyles();
 
   return (
     <div className="mb-12 max-w-3xl mx-auto">
@@ -29,10 +29,10 @@ export default function OptionSelector({
             onClick={() => onSelect(option.value)}
             className="p-6 rounded-2xl border-2 font-bold transition-all duration-300 hover:scale-105 flex flex-col items-center gap-3"
             style={{
-              backgroundColor: `${primaryRgba}, 0.1)`,
+              backgroundColor: `rgba(${primaryRgb}, 0.08)`,
               borderColor: option.color || primary,
               color: option.color || primary,
-              boxShadow: option.glow ? `0 0 20px ${option.glow}` : `0 0 20px ${primaryRgba}, 0.4)`
+              boxShadow: option.glow ? `0 0 20px ${option.glow}` : `0 0 20px rgba(${primaryRgb}, 0.4)`
             }}
           >
             {option.icon && (

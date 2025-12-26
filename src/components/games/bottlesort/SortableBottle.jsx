@@ -8,7 +8,7 @@ export default function SortableBottle({
   isSelected, 
   onClick 
 }) {
-  const { primary, primaryRgba } = useThemeStyles();
+  const { primary, primaryRgba: _primaryRgba, primaryRgb } = useThemeStyles();
 
   return (
     <div
@@ -19,13 +19,13 @@ export default function SortableBottle({
     >
       <div 
         className="w-20 h-32 rounded-t-lg rounded-b-3xl border-4 flex flex-col-reverse p-2 gap-1 transition-all duration-300"
-        style={{
+          style={{
           borderColor: isSelected ? primary : '#4b5563',
           backgroundColor: isSelected 
-            ? `${primaryRgba}, 0.2)` 
+            ? `rgba(${primaryRgb}, 0.2)` 
             : 'rgba(31, 41, 55, 0.5)',
           boxShadow: isSelected 
-            ? `0 0 25px ${primaryRgba}, 0.6)` 
+            ? `0 0 25px rgba(${primaryRgb}, 0.6)` 
             : 'none'
         }}
       >

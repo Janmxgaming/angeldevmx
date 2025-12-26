@@ -1,212 +1,116 @@
 /**
  * Configuración centralizada de todos los juegos
- * Agregar un nuevo juego es tan fácil como agregar un objeto aquí
  */
 
-// ============================================
-// CONFIGURACIÓN DE JUEGOS
-// ============================================
+// Plantilla de juego por defecto
+const DEFAULT_GAME_CONFIG = {
+  enabled: false,
+  players: { min: 1, max: 1 },
+  meta: {
+    version: '1.0.0',
+    author: 'AngelDevMX',
+    releaseDate: '2025-01-01'
+  },
+  features: {
+    multiplayer: false,
+    saveGame: true,
+    achievements: true,
+    leaderboard: true,
+    levels: false
+  },
+  stats: {
+    avgPlayTime: 5,
+    popularity: 4.0,
+    plays: 0
+  }
+};
+
+// Helper para crear configuración de juego
+const createGame = (overrides) => ({
+  ...DEFAULT_GAME_CONFIG,
+  ...overrides,
+  meta: { ...DEFAULT_GAME_CONFIG.meta, ...overrides.meta },
+  features: { ...DEFAULT_GAME_CONFIG.features, ...overrides.features },
+  stats: { ...DEFAULT_GAME_CONFIG.stats, ...overrides.stats },
+  players: { ...DEFAULT_GAME_CONFIG.players, ...overrides.players }
+});
 
 export const GAME_REGISTRY = {
-  bottleSort: {
+  bottleSort: createGame({
     id: 'bottleSort',
     component: () => import('../components/games/BottleSortGame.jsx'),
     enabled: true,
     category: 'puzzle',
     difficulty: 'medium',
-    players: { min: 1, max: 1 },
-    meta: {
-      icon: '🧪',
-      color: 'cyan',
-      version: '1.0.0',
-      author: 'AngelDevMX',
-      releaseDate: '2025-01-01'
-    },
-    features: {
-      multiplayer: false,
-      saveGame: true,
-      achievements: true,
-      leaderboard: false,
-      levels: true
-    },
-    stats: {
-      avgPlayTime: 5, // minutos
-      popularity: 4.5,
-      plays: 0
-    }
-  },
+    meta: { icon: '🧪', color: 'cyan' },
+    features: { leaderboard: false, levels: true },
+    stats: { popularity: 4.5 }
+  }),
 
-  bottleGuess: {
+  bottleGuess: createGame({
     id: 'bottleGuess',
     component: () => import('../components/games/BottleGuessGame.jsx'),
     enabled: true,
     category: 'memory',
     difficulty: 'easy',
-    players: { min: 1, max: 1 },
-    meta: {
-      icon: '🎯',
-      color: 'purple',
-      version: '1.0.0',
-      author: 'AngelDevMX',
-      releaseDate: '2025-01-01'
-    },
-    features: {
-      multiplayer: false,
-      saveGame: true,
-      achievements: true,
-      leaderboard: true,
-      levels: false
-    },
-    stats: {
-      avgPlayTime: 3,
-      popularity: 4.2,
-      plays: 0
-    }
-  },
+    meta: { icon: '🎯', color: 'purple' },
+    stats: { avgPlayTime: 3, popularity: 4.2 }
+  }),
 
-  tictactoe: {
+  tictactoe: createGame({
     id: 'tictactoe',
     component: () => import('../components/games/TicTacToeGame.jsx'),
     enabled: true,
     category: 'strategy',
     difficulty: 'easy',
     players: { min: 1, max: 2 },
-    meta: {
-      icon: '⭕',
-      color: 'blue',
-      version: '1.0.0',
-      author: 'AngelDevMX',
-      releaseDate: '2025-01-01'
-    },
-    features: {
-      multiplayer: true,
-      saveGame: false,
-      achievements: false,
-      leaderboard: false,
-      levels: false
-    },
-    stats: {
-      avgPlayTime: 2,
-      popularity: 4.8,
-      plays: 0
-    }
-  },
+    meta: { icon: '⭕', color: 'blue' },
+    features: { multiplayer: true, saveGame: false, achievements: false, leaderboard: false },
+    stats: { avgPlayTime: 2, popularity: 4.8 }
+  }),
 
-  simon: {
+  simon: createGame({
     id: 'simon',
     component: () => import('../components/games/SimonGame.jsx'),
     enabled: true,
     category: 'memory',
     difficulty: 'medium',
-    players: { min: 1, max: 1 },
-    meta: {
-      icon: '🎵',
-      color: 'purple',
-      version: '1.0.0',
-      author: 'AngelDevMX',
-      releaseDate: '2025-12-21'
-    },
-    features: {
-      multiplayer: false,
-      saveGame: true,
-      achievements: true,
-      leaderboard: true,
-      levels: true
-    },
-    stats: {
-      avgPlayTime: 8,
-      popularity: 4.7,
-      plays: 0
-    }
-  },
+    meta: { icon: '🎵', color: 'purple', releaseDate: '2025-12-21' },
+    features: { levels: true },
+    stats: { avgPlayTime: 8, popularity: 4.7 }
+  }),
 
-  // ============================================
-  // JUEGOS FUTUROS (Plantillas listas para usar)
-  // ============================================
-
-  snake: {
+  // Juegos futuros (deshabilitados)
+  snake: createGame({
     id: 'snake',
-    component: null, // () => import('../components/games/SnakeGame')
-    enabled: false,
+    component: null,
     category: 'arcade',
     difficulty: 'medium',
-    players: { min: 1, max: 1 },
-    meta: {
-      icon: '🐍',
-      color: 'green',
-      version: '0.0.0',
-      author: 'AngelDevMX',
-      releaseDate: 'TBD'
-    },
-    features: {
-      multiplayer: false,
-      saveGame: true,
-      achievements: true,
-      leaderboard: true,
-      levels: true
-    },
-    stats: {
-      avgPlayTime: 10,
-      popularity: 0,
-      plays: 0
-    }
-  },
+    meta: { icon: '🐍', color: 'green', version: '0.0.0', releaseDate: 'TBD' },
+    features: { levels: true },
+    stats: { avgPlayTime: 10, popularity: 0 }
+  }),
 
-  memory: {
+  memory: createGame({
     id: 'memory',
     component: null,
-    enabled: false,
     category: 'memory',
     difficulty: 'easy',
     players: { min: 1, max: 2 },
-    meta: {
-      icon: '🎴',
-      color: 'pink',
-      version: '0.0.0',
-      author: 'AngelDevMX',
-      releaseDate: 'TBD'
-    },
-    features: {
-      multiplayer: true,
-      saveGame: true,
-      achievements: true,
-      leaderboard: true,
-      levels: true
-    },
-    stats: {
-      avgPlayTime: 5,
-      popularity: 0,
-      plays: 0
-    }
-  },
+    meta: { icon: '🎴', color: 'pink', version: '0.0.0', releaseDate: 'TBD' },
+    features: { multiplayer: true, levels: true },
+    stats: { popularity: 0 }
+  }),
 
-  wordSearch: {
+  wordSearch: createGame({
     id: 'wordSearch',
     component: null,
-    enabled: false,
     category: 'puzzle',
     difficulty: 'medium',
-    players: { min: 1, max: 1 },
-    meta: {
-      icon: '🔤',
-      color: 'orange',
-      version: '0.0.0',
-      author: 'AngelDevMX',
-      releaseDate: 'TBD'
-    },
-    features: {
-      multiplayer: false,
-      saveGame: true,
-      achievements: true,
-      leaderboard: true,
-      levels: true
-    },
-    stats: {
-      avgPlayTime: 8,
-      popularity: 0,
-      plays: 0
-    }
-  }
+    meta: { icon: '🔤', color: 'orange', version: '0.0.0', releaseDate: 'TBD' },
+    features: { levels: true },
+    stats: { popularity: 0 }
+  })
 };
 
 // ============================================
@@ -221,10 +125,6 @@ export const GAME_CATEGORIES = {
   memory: { id: 'memory', icon: '🧠', color: 'cyan' },
   multiplayer: { id: 'multiplayer', icon: '👥', color: 'green' }
 };
-
-// ============================================
-// FUNCIONES HELPER
-// ============================================
 
 /**
  * Obtiene todos los juegos habilitados
