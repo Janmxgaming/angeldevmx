@@ -347,9 +347,52 @@ src/
 ✅ **Bottle Sort** - Ordena colores en botellas  
 ✅ **Bottle Guess** - Adivina el color mezclado  
 ✅ **Tic Tac Toe** - Clásico con IA  
-🔜 **Snake** - Próximamente  
+✅ **Simon** - Memoria de secuencias  
+✅ **Snake** - Estilo Nokia 3310 retro  
 🔜 **Memory** - Próximamente  
 🔜 **Word Search** - Próximamente  
+
+## 📊 Sistema de Leaderboard
+
+El sistema de leaderboard tiene las siguientes características:
+
+### ✨ Features
+- **Prevención de duplicados**: Solo mantiene la puntuación más alta por usuario
+- **Case-insensitive**: "Angel" y "angel" se consideran el mismo usuario
+- **Sincronización**: Local (localStorage) + Servidor (Node.js + JSON)
+- **Validación**: No permite usernames duplicados al jugar
+- **Auto-limpieza**: El GET automáticamente deduplica al retornar datos
+
+### 🔧 API Endpoints
+
+```bash
+# Obtener leaderboard de un juego
+GET http://localhost:3001/api/leaderboard/:gameId
+
+# Enviar/actualizar puntuación
+POST http://localhost:3001/api/leaderboard/:gameId
+Body: { "username": "Angel", "score": 220 }
+
+# Limpiar duplicados (manual)
+POST http://localhost:3001/api/leaderboard/:gameId/deduplicate
+
+# Limpiar completamente un leaderboard
+DELETE http://localhost:3001/api/leaderboard/:gameId
+
+# Health check
+GET http://localhost:3001/api/health
+```
+
+### 🎮 Comportamiento
+
+1. Al enviar una puntuación:
+   - Si el usuario no existe → crear entrada nueva
+   - Si el usuario existe y el nuevo score es mayor → actualizar score
+   - Si el nuevo score es menor o igual → no hacer nada
+
+2. Al obtener leaderboard:
+   - Automáticamente deduplica entries manteniendo solo el score más alto
+   - Retorna top 50 ordenados por puntuación
 
 ## 🤝 Contribuir
 
@@ -359,9 +402,23 @@ Este es un proyecto personal, pero si encuentras bugs o tienes sugerencias, son 
 
 ## 🔧 Utilidades
 
-### Resetear Leaderboard
+### Limpiar Duplicados en Leaderboard
 ```bash
-# Backend
+# Desde el backend con curl
+curl -X POST http://localhost:3001/api/leaderboard/snake/deduplicate
+
+# Para todos los juegos
+for game in snake bottlesort bottleguess tictactoe simon; do
+  curl -X POST http://localhost:3001/api/leaderboard/$game/deduplicate
+done
+```
+
+### Resetear Leaderboard Completo
+```bash
+# Backend - Un juego específico
+curl -X DELETE http://localhost:3001/api/leaderboard/snake
+
+# Backend - Todo (archivo JSON)
 echo '{"leaderboards":{}}' > backend/leaderboard.json
 
 # Frontend (consola del navegador F12)
@@ -375,6 +432,15 @@ localStorage.removeItem('player_username');
 location.reload();
 ```
 
+### Ver Estado del Leaderboard
+```bash
+# Ver leaderboard de un juego
+curl http://localhost:3001/api/leaderboard/snake | python3 -m json.tool
+
+# Ver archivo completo
+cat backend/leaderboard.json | python3 -m json.tool
+```
+
 ---
 
 ## 📝 Notas Técnicas
@@ -383,10 +449,12 @@ location.reload();
 - **Performance**: Lazy loading + Vite optimizations
 - **Mantenibilidad**: Sistema modular tipo plugin
 - **Escalabilidad**: Agregar contenido sin tocar componentes
+- **Leaderboard**: Deduplicación automática con case-insensitive comparison
 
 ---
 
 **Autor**: AngelDevMX  
-**Versión**: 2.0.0  
+**Versión**: 2.1.0  
 **Licencia**: MIT
+
 

@@ -13,18 +13,28 @@ export function setupRoutes(app) {
       const db = readDB();
       const leaderboard = db.leaderboards[gameId] || [];
       
-      const topScores = leaderboard
+      // Deduplicate: Keep only highest score per user (case-insensitive)
+      const userMap = new Map();
+      leaderboard.forEach(entry => {
+        const normalizedUsername = entry.username.toLowerCase();
+        const existing = userMap.get(normalizedUsername);
+        if (!existing || entry.score > existing.score) {
+          userMap.set(normalizedUsername, entry);
+        }
+      });
+      
+      const deduplicated = Array.from(userMap.values())
         .sort((a, b) => b.score - a.score)
         .slice(0, 50);
       
-      res.json(topScores);
+      res.json(deduplicated);
     } catch (error) {
       console.error('Error reading leaderboard:', error);
       res.status(500).json({ error: 'Error reading leaderboard' });
     }
   });
 
-  // Agregar nueva entrada al leaderboard
+  // Agregar/actualizar entrada al leaderboard
   app.post('/api/leaderboard/:gameId', (req, res) => {
     try {
       const { gameId } = req.params;
@@ -40,21 +50,53 @@ export function setupRoutes(app) {
         db.leaderboards[gameId] = [];
       }
       
-      const newEntry = {
-        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        username: username.trim(),
-        score,
-        date: Date.now()
-      };
+      const normalizedUsername = username.trim().toLowerCase();
       
-      db.leaderboards[gameId].push(newEntry);
+      // Buscar si el usuario ya existe (case-insensitive)
+      const existingIndex = db.leaderboards[gameId].findIndex(
+        entry => entry.username.toLowerCase() === normalizedUsername
+      );
+      
+      let entry;
+      
+      if (existingIndex !== -1) {
+        // Si existe, actualizar solo si el nuevo score es mayor
+        const existingEntry = db.leaderboards[gameId][existingIndex];
+        if (score > existingEntry.score) {
+          entry = {
+            ...existingEntry,
+            score,
+            date: Date.now()
+          };
+          db.leaderboards[gameId][existingIndex] = entry;
+          console.log(`Updated ${username}: ${existingEntry.score} -> ${score}`);
+        } else {
+          console.log(`Score ${score} not higher than ${existingEntry.score} for ${username}`);
+          return res.status(200).json({ 
+            message: 'Score not higher than existing', 
+            existing: existingEntry 
+          });
+        }
+      } else {
+        // Si no existe, crear nueva entrada
+        entry = {
+          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          username: username.trim(),
+          score,
+          date: Date.now()
+        };
+        db.leaderboards[gameId].push(entry);
+        console.log(`New entry for ${username}: ${score}`);
+      }
+      
+      // Ordenar y mantener top 100
       db.leaderboards[gameId] = db.leaderboards[gameId]
         .sort((a, b) => b.score - a.score)
         .slice(0, 100);
       
       writeDB(db);
       
-      res.status(201).json(newEntry);
+      res.status(201).json(entry);
     } catch (error) {
       console.error('Error saving score:', error);
       res.status(500).json({ error: 'Error saving score' });
@@ -88,6 +130,47 @@ export function setupRoutes(app) {
     } catch (error) {
       console.error('Error clearing leaderboard:', error);
       res.status(500).json({ error: 'Error clearing leaderboard' });
+    }
+  });
+
+  // Limpiar duplicados en un leaderboard
+  app.post('/api/leaderboard/:gameId/deduplicate', (req, res) => {
+    try {
+      const { gameId } = req.params;
+      const db = readDB();
+      
+      if (!db.leaderboards[gameId]) {
+        return res.status(404).json({ error: 'Leaderboard not found' });
+      }
+      
+      const original = db.leaderboards[gameId];
+      const userMap = new Map();
+      
+      // Mantener solo el score más alto por usuario (case-insensitive)
+      original.forEach(entry => {
+        const normalizedUsername = entry.username.toLowerCase();
+        const existing = userMap.get(normalizedUsername);
+        
+        if (!existing || entry.score > existing.score) {
+          userMap.set(normalizedUsername, entry);
+        }
+      });
+      
+      db.leaderboards[gameId] = Array.from(userMap.values())
+        .sort((a, b) => b.score - a.score);
+      
+      const removed = original.length - db.leaderboards[gameId].length;
+      
+      writeDB(db);
+      
+      res.json({ 
+        message: `Removed ${removed} duplicate entries`,
+        before: original.length,
+        after: db.leaderboards[gameId].length
+      });
+    } catch (error) {
+      console.error('Error deduplicating leaderboard:', error);
+      res.status(500).json({ error: 'Error deduplicating leaderboard' });
     }
   });
 }

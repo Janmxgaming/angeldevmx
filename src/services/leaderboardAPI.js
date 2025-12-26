@@ -61,3 +61,18 @@ export async function isServerAvailable() {
     return false;
   }
 }
+
+/**
+ * Limpiar duplicados en el leaderboard del servidor
+ */
+export async function deduplicateLeaderboard(gameId) {
+  try {
+    const response = await fetch(`${API_URL}/${gameId}/deduplicate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    return handleResponse(response);
+  } catch (error) {
+    return handleError(error, 'Error deduplicating leaderboard:');
+  }
+}

@@ -42,9 +42,11 @@ export function useLeaderboard(gameId = 'global') {
 
   const submitScore = useCallback(async (entry) => {
     try {
-      // Buscar si el usuario ya tiene una entrada
+      const normalizedUsername = entry.username?.toLowerCase().trim();
+      
+      // Buscar si el usuario ya tiene una entrada (case-insensitive)
       const existingEntry = board.find(
-        item => item.username?.toLowerCase() === entry.username?.toLowerCase()
+        item => item.username?.toLowerCase().trim() === normalizedUsername
       );
 
       // Si existe y la nueva puntuación NO es mayor, no hacer nada
@@ -55,23 +57,25 @@ export function useLeaderboard(gameId = 'global') {
 
       let next;
       if (existingEntry) {
-        // Actualizar la entrada existente con la nueva puntuación más alta
+        // Actualizar solo la puntuación y fecha de la entrada existente
         next = board.map(item => 
-          item.username?.toLowerCase() === entry.username?.toLowerCase()
+          item.username?.toLowerCase().trim() === normalizedUsername
             ? { ...item, score: entry.score, date: Date.now() }
             : item
         );
+        console.log(`Updated score for ${entry.username}: ${existingEntry.score} -> ${entry.score}`);
       } else {
-        // Crear nueva entrada
+        // Crear nueva entrada solo si no existe
         const newEntry = { 
           ...entry, 
           date: Date.now(),
           id: `${entry.username}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
         };
         next = [...board, newEntry];
+        console.log(`New entry created for ${entry.username}: ${entry.score}`);
       }
       
-      // Ordenar y mantener solo top 50
+      // Ordenar por puntuación y mantener solo top 50
       next = next
         .sort((a, b) => (b.score || 0) - (a.score || 0))
         .slice(0, 50);
@@ -97,7 +101,42 @@ export function useLeaderboard(gameId = 'global') {
 
   const clearBoard = useCallback(() => setBoard([]), [setBoard]);
 
-  return { board, submitScore, clearBoard, serverAvailable, syncing, syncFromServer };
+  // Función para limpiar duplicados manteniendo solo la mejor puntuación por usuario
+  const removeDuplicates = useCallback(async () => {
+    // Limpiar localmente
+    const uniqueEntries = new Map();
+    
+    board.forEach(entry => {
+      const username = entry.username?.toLowerCase().trim();
+      if (!username) return;
+      
+      const existing = uniqueEntries.get(username);
+      if (!existing || entry.score > existing.score) {
+        uniqueEntries.set(username, entry);
+      }
+    });
+    
+    const cleaned = Array.from(uniqueEntries.values())
+      .sort((a, b) => (b.score || 0) - (a.score || 0));
+    
+    setBoard(cleaned);
+    console.log(`Cleaned local leaderboard: ${board.length} -> ${cleaned.length} entries`);
+
+    // También limpiar en el servidor si está disponible
+    if (serverAvailable) {
+      try {
+        const api = await import('../services/leaderboardAPI');
+        const result = await api.deduplicateLeaderboard(gameId);
+        console.log('Server deduplicated:', result);
+        // Resincronizar desde el servidor
+        await syncFromServer();
+      } catch (error) {
+        console.warn('Failed to deduplicate on server:', error);
+      }
+    }
+  }, [board, setBoard, gameId, serverAvailable, syncFromServer]);
+
+  return { board, submitScore, clearBoard, removeDuplicates, serverAvailable, syncing, syncFromServer };
 }
 
 /**
