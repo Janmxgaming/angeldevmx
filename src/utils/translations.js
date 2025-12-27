@@ -7,6 +7,18 @@ export const translations = {
       projects: 'Proyectos',
       contact: 'Contacto'
     },
+    projects: {
+      title: 'Mis Proyectos en GitHub',
+      subtitle: 'Explora mi trabajo en código abierto y proyectos personales',
+      loading: 'Cargando proyectos...',
+      error: 'Error al cargar repositorios',
+      retry: 'Reintentar',
+      noRepos: 'No se encontraron repositorios',
+      viewCode: 'Ver Código',
+      liveDemo: 'Demo en Vivo',
+      updated: 'Actualizado',
+      noDescription: 'Sin descripción'
+    },
     home: {
       welcome: 'Bienvenido',
       title: 'AngelDevMX',
@@ -123,12 +135,22 @@ export const translations = {
       home: 'Home',
       games: 'Games',
       about: 'About',
-      snake: 'Retro Snake',
-      tictactoe: 'Tic-Tac-Toe',
-      wordSearch: 'Word Search',
-      memory: 'Memory Game',
-      simon: 'Simon Says',
-      backToGames: 'Back to Game',
+      projects: 'Projects',
+      contact: 'Contact'
+    },
+    projects: {
+      title: 'My GitHub Projects',
+      subtitle: 'Explore my open source work and personal projects',
+      loading: 'Loading projects...',
+      error: 'Error loading repositories',
+      retry: 'Retry',
+      noRepos: 'No repositories found',
+      viewCode: 'View Code',
+      liveDemo: 'Live Demo',
+      updated: 'Updated',
+      noDescription: 'No description available'
+    },
+    home: {
       title: 'AngelDevMX',
       subtitle: 'Full Stack Developer & Game Creator',
       description: 'Creating unique digital experiences',

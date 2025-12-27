@@ -13,9 +13,12 @@ export function useThemeStyles() {
   const themeColors = useMemo(() => {
     const colors = isNeon ? COLORS.neon : COLORS.normal;
     
+    // Función helper para crear rgba con alpha personalizado
+    const primaryRgbaFn = (alpha = 1) => `rgba(${colors.primaryRgb}, ${alpha})`;
+    
     return {
       primary: colors.primary,
-      primaryRgba: colors.primaryRgba,
+      primaryRgba: primaryRgbaFn,
       primaryRgb: colors.primaryRgb,
       gradient: colors.gradient,
       secondary: colors.secondary,

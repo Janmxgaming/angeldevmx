@@ -34,6 +34,38 @@ export function setupRoutes(app) {
     }
   });
 
+  // Obtener repositorios públicos de GitHub
+  app.get('/api/github/repos', async (req, res) => {
+    const username = 'Janmxgaming';
+    const url = `https://api.github.com/users/${username}/repos?sort=updated&per_page=12`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('GitHub API error');
+      const repos = await response.json();
+
+      // Filtra y mapea solo la info relevante
+      const cleanRepos = repos.map(repo => ({
+        name: repo.name,
+        description: repo.description,
+        html_url: repo.html_url,
+        homepage: repo.homepage,
+        language: repo.language,
+        stargazers_count: repo.stargazers_count,
+        forks_count: repo.forks_count,
+        updated_at: repo.updated_at,
+        topics: repo.topics,
+        owner: {
+          avatar_url: repo.owner.avatar_url,
+          login: repo.owner.login
+        }
+      }));
+
+      res.json({ repos: cleanRepos });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // Agregar/actualizar entrada al leaderboard
   app.post('/api/leaderboard/:gameId', (req, res) => {
     try {
